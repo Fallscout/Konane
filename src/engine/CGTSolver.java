@@ -1,6 +1,5 @@
 package engine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import game.Board;
@@ -11,7 +10,7 @@ public class CGTSolver {
 
 	public OutcomeType solve(Board board, boolean blacksTurn) {
 
-		CGTGame result = this.calculate(board, blacksTurn);
+		CGTValue result = this.calculate(board, blacksTurn);
 
 		if (result.getClass() == Number.class) {
 			Number number = (Number) result;
@@ -29,7 +28,7 @@ public class CGTSolver {
 		return null;
 	}
 
-	private CGTGame calculate(Board board, boolean blacksTurn) {
+	private CGTValue calculate(Board board, boolean blacksTurn) {
 		List<Move> leftOptions = board.getLeftOptions();
 		List<Move> rightOptions = board.getRightOptions();
 		//remark: if left's best option is positive and right's best option is positive
@@ -38,25 +37,19 @@ public class CGTSolver {
 		
 		if (leftOptions.isEmpty() && rightOptions.isEmpty()) {
 			//{ | } = 0 (Berlekamp et al., p.27)
-			return new CGTGame();
+			return new Number(0);
 		} 
-//		else if (leftOptions.isEmpty() && !rightOptions.isEmpty()) {
-//			//{ | -n} = -(n+1) (Berlekamp et al., p.39)
-//			return new Number(-(rightOptions.size()+1));
-//		} else if (!leftOptions.isEmpty() && rightOptions.isEmpty()) {
-//			//{n| }=n+1 (Berlekamp et al., p. 27)
-//			return new Number(leftOptions.size()+1);
-//		} 
 		else {
 			CGTValue blackOutcome = null;
 			CGTValue whiteOutcome = null;
 
-			CGTGame game = null;
+			CGTValue value = null;
 			for (Move option : leftOptions) {
 				board.executeMove(option);
-				game = calculate(board, !blacksTurn);
+				value = calculate(board, !blacksTurn);
 				board.revertMove(option);
 				
+				//TODO: Discard blackOutcome if new value is better
 				if(blackOutcome == null) {
 					blackOutcome = value;
 				}
@@ -64,52 +57,57 @@ public class CGTSolver {
 
 			for (Move option : rightOptions) {
 				board.executeMove(option);
-				game = calculate(board, !blacksTurn);
+				value = calculate(board, !blacksTurn);
 				board.revertMove(option);
 				
+				//TODO: Discard whiteOutcome if new value is better
 				if(whiteOutcome == null) {
 					whiteOutcome = value;
 				}
 			}
 			
 			if(blackOutcome == null && whiteOutcome != null) {
-				return new Number(-1);
+//				return new Number(-1);
+				//{ | -n} = -(n+1) (Berlekamp et al., p.39)
+				//What about outcome types other than number?
+				return new Number(-(((Number)whiteOutcome).getValue()+1));
 			} else if(blackOutcome != null && whiteOutcome == null) {
-				return new Number(1);
+//				return new Number(1);
+				//{n| }=n+1 (Berlekamp et al., p. 27)
+				return new Number(((Number)blackOutcome).getValue()+1);
 			} else if(blackOutcome != null && whiteOutcome != null) {
 				if(blackOutcome.getClass() == Number.class && whiteOutcome.getClass() == Number.class) {
-					Number black = (Number)blackOutcome;
-					Number white = (Number)whiteOutcome;
-					
-					//For fractions, see Berlekamp et al., p. 41
-					//For switches, see Berlekamp et al., p. 141
-					
-					if(black.getValue() == 0 && white.getValue() == 0) {
-						return new Nimber(0);
-					}
-					
-					if(black.getValue()+1 == white.getValue()) {
-						//{n|n+1}=n+1/2 (Berlekamp et al., p. 27)
-						return new Number(black.getValue() + 0.5);
-					}
-					
-					if(black.getValue() < 0 && white.getValue() > 0) {
-						return new Number(0);
-					}
-					
-					if(black.getValue() > 0 && white.getValue() > 0) {
-						
-					}
-					
-					if(black.getValue() < 0 && white.getValue() < 0) {
-						
-					}
+					return CGTValue.getOutcome((Number)blackOutcome, (Number)whiteOutcome);
 				} else if(blackOutcome.getClass() == Number.class && whiteOutcome.getClass() == Nimber.class) {
-					
+					return CGTValue.getOutcome((Number)blackOutcome, (Nimber)whiteOutcome);
+				} else if(blackOutcome.getClass() == Number.class && whiteOutcome.getClass() == Switch.class) {
+					return CGTValue.getOutcome((Number)blackOutcome, (Switch)whiteOutcome);
+				} else if(blackOutcome.getClass() == Number.class && whiteOutcome.getClass() == Infinitesimal.class) {
+					return CGTValue.getOutcome((Number)blackOutcome, (Infinitesimal)whiteOutcome);
 				} else if(blackOutcome.getClass() == Nimber.class && whiteOutcome.getClass() == Number.class) {
-					
+					return CGTValue.getOutcome((Nimber)blackOutcome, (Number)whiteOutcome);
 				} else if(blackOutcome.getClass() == Nimber.class && whiteOutcome.getClass() == Nimber.class) {
-					
+					return CGTValue.getOutcome((Nimber)blackOutcome, (Nimber)whiteOutcome);
+				} else if(blackOutcome.getClass() == Nimber.class && whiteOutcome.getClass() == Switch.class) {
+					return CGTValue.getOutcome((Nimber)blackOutcome, (Switch)whiteOutcome);
+				} else if(blackOutcome.getClass() == Nimber.class && whiteOutcome.getClass() == Infinitesimal.class) {
+					return CGTValue.getOutcome((Nimber)blackOutcome, (Infinitesimal)whiteOutcome);
+				} else if(blackOutcome.getClass() == Switch.class && whiteOutcome.getClass() == Number.class) {
+					return CGTValue.getOutcome((Switch)blackOutcome, (Number)whiteOutcome);
+				} else if(blackOutcome.getClass() == Switch.class && whiteOutcome.getClass() == Nimber.class) {
+					return CGTValue.getOutcome((Switch)blackOutcome, (Nimber)whiteOutcome);
+				} else if(blackOutcome.getClass() == Switch.class && whiteOutcome.getClass() == Switch.class) {
+					return CGTValue.getOutcome((Switch)blackOutcome, (Switch)whiteOutcome);
+				} else if(blackOutcome.getClass() == Switch.class && whiteOutcome.getClass() == Infinitesimal.class) {
+					return CGTValue.getOutcome((Switch)blackOutcome, (Infinitesimal)whiteOutcome);
+				} else if(blackOutcome.getClass() == Infinitesimal.class && whiteOutcome.getClass() == Number.class) {
+					return CGTValue.getOutcome((Infinitesimal)blackOutcome, (Number)whiteOutcome);
+				} else if(blackOutcome.getClass() == Infinitesimal.class && whiteOutcome.getClass() == Nimber.class) {
+					return CGTValue.getOutcome((Infinitesimal)blackOutcome, (Nimber)whiteOutcome);
+				} else if(blackOutcome.getClass() == Infinitesimal.class && whiteOutcome.getClass() == Switch.class) {
+					return CGTValue.getOutcome((Infinitesimal)blackOutcome, (Switch)whiteOutcome);
+				} else if(blackOutcome.getClass() == Infinitesimal.class && whiteOutcome.getClass() == Infinitesimal.class) {
+					return CGTValue.getOutcome((Infinitesimal)blackOutcome, (Infinitesimal)whiteOutcome);
 				}
 			}
 			
