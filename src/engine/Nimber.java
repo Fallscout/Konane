@@ -7,16 +7,12 @@ public class Nimber extends CGTValue {
 		this.value = value;
 	}
 	
-	public Nimber add(Nimber other) {
-		return new Nimber(this.value ^ other.value);
-	}
-	
-	public double getValue() {
+	public int getValue() {
 		return this.value;
 	}
 	
-	public void setValue(int value) {
-		this.value = value;
+	@Override
+	public String toString() {
+		return value + "*";
 	}
-
 }
