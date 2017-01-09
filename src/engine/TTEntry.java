@@ -3,37 +3,31 @@ package engine;
 import game.Move;
 
 public class TTEntry {
-	private long key;
-	private Move move;
-	private int score;
-	private ScoreFlag flag;
-	private int depth;
-	
-	public TTEntry(long key, Move move, int score, ScoreFlag flag, int depth) {
-		this.key = key;
-		this.move = move;
-		this.score = score;
-		this.flag = flag;
-		this.depth = depth;
+    private final long zobristHash;
+    private final Move bestLeftMove;
+    private final Move bestRightMove;
+    private final CGTValue cgtValue;
+
+    public TTEntry(long zobristHash, Move bestLeftMove, Move bestRightMove, CGTValue cgtValue) {
+        this.zobristHash = zobristHash;
+        this.bestLeftMove = bestLeftMove;
+        this.bestRightMove = bestRightMove;
+        this.cgtValue = cgtValue;
+    }
+
+	public Move getBestLeftMove() {
+		return bestLeftMove;
 	}
 
-	public long getKey() {
-		return key;
-	}
+	public Move getBestRightMove() {
+        return bestRightMove;
+    }
 
-	public Move getMove() {
-		return move;
-	}
+    public CGTValue getCgtValue() {
+        return cgtValue;
+    }
 
-	public int getScore() {
-		return score;
-	}
-
-	public ScoreFlag getFlag() {
-		return flag;
-	}
-
-	public int getDepth() {
-		return depth;
-	}
+    public long getZobristHash() {
+        return zobristHash;
+    }
 }

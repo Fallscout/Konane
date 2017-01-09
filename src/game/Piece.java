@@ -25,11 +25,11 @@ public class Piece {
 		return col;
 	}
 	
-	public boolean getColor() {
+	public boolean isBlack() {
 		return isBlack;
 	}
 	
-	public void setColor(boolean black) {
+	public void setIsBlack(boolean black) {
 		this.isBlack = black;
 	}
 

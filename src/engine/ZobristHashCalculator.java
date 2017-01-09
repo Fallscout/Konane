@@ -1,59 +1,79 @@
 package engine;
 
-import java.security.SecureRandom;
-
+import game.Board;
 import game.Move;
 import game.Piece;
 
+import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.List;
+
 public class ZobristHashCalculator {
-	private static long[][][] Randoms;
-	private static long RedPlayerRandom;
-	
-	public static void Init(int rows, int cols) {
-		Randoms = new long[rows][cols][2];
+
+	private final long[][][] positionValue;
+
+	private final static int WHITE = 0;
+	private final static int BLACK = 1;
+
+	public ZobristHashCalculator(int rows, int columns) {
+		positionValue = new long[rows][columns][2];
+		fillTables();
+	}
+
+	private static int getPieceValue(Piece piece) {
+		if (piece.isBlack()) {
+			return BLACK;
+		} else {
+			return WHITE;
+		}
+	}
+
+	private void fillTables() {
+		HashSet<Long> uniqueRandoms = new HashSet<>();
 		SecureRandom random = new SecureRandom();
-		for(int board = 0; board < 4; board++) {
-			for(int row = 0; row < rows; row++) {
-				for(int col = 0; col < cols; col++) {
-					Randoms[row][col][board] = random.nextLong();
+		for (int y = 0; y < positionValue.length; y++) {
+			for (int x = 0; x < positionValue[y].length; x++) {
+				for (int i = 0; i < positionValue[y][x].length; i++) {
+					boolean unique = false;
+					while (!unique) {
+						long randomHashValue = random.nextLong();
+						unique = uniqueRandoms.add(randomHashValue);
+						if (unique) {
+							positionValue[y][x][i] = randomHashValue;
+						}
+					}
 				}
 			}
 		}
-
-		RedPlayerRandom = random.nextLong();
 	}
-	
-//	public static long CalculateHash(Piece[][] board, PieceColor currentPlayer) {
-//		long ret = 0;
-//
-//		for (int i = 0; i < board.length; i++) {
-//			for (int j = 0; j < board[i].length; j++) {
-//				Piece piece = board[i][j];
-//				if (piece != null) {
-////					ret ^= Randoms[i][j][GetFactor(piece)];
-//				}
-//			}
-//		}
-//		
-//		if(currentPlayer == PieceColor.WHITE) {
-//			ret ^= RedPlayerRandom;
-//		}
-//
-//		return ret;
-//	}
-	
-	public static long UpdateHash(long hash, Piece movingPiece, Move move) {
-		long ret = hash;
 
-//		ret ^= RedPlayerRandom;
-//
-//		ret ^= Randoms[move.getSourceRow()][move.getSourceCol()][GetFactor(movingPiece)];
-//		ret ^= Randoms[move.getTargetRow()][move.getTargetCol()][GetFactor(movingPiece)];
-//
-//		for (Piece removedPiece : move.getCapturedPieces()) {
-//			ret ^= Randoms[removedPiece.getRow()][removedPiece.getCol()][GetFactor(removedPiece)];
-//		}
+	public long calculateHash(Board board) {
+		long hash = 0;
+		for (int x = 0; x < board.getCols(); x++) {
+			for (int y = 0; y < board.getRows(); y++) {
+				Piece piece = board.getPieceAtPosition(x, y);
+				if (piece != null) {
+					hash ^= positionValue[y][x][getPieceValue(piece)];
+				}
+			}
+		}
+		return hash;
+	}
 
-		return ret;
+	public long updateHash(long hash, Move move, Piece piece) {
+		// Not a null move
+		if (move != null && piece != null) {
+			int pieceValue = getPieceValue(piece);
+			List<Piece> takenOpponentsPieces = move.getCapturedPieces();
+			if (takenOpponentsPieces != null) {
+				for (Piece takenPiece : takenOpponentsPieces) {
+					hash ^= positionValue[takenPiece.getRow()][takenPiece.getCol()][getPieceValue(takenPiece)];
+				}
+			}
+			hash ^= positionValue[move.getSourceRow()][move.getSourceCol()][pieceValue];
+			hash ^= positionValue[move.getTargetRow()][move.getTargetCol()][pieceValue];
+		}
+
+		return hash;
 	}
 }

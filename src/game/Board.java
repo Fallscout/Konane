@@ -1,18 +1,23 @@
 package game;
 
+import engine.ZobristHashCalculator;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
-	private int rows;
-	private int cols;
-	private Piece[][] gameState;
-	private List<Piece> blackPieces;
-	private List<Piece> whitePieces;
+	private final int rows;
+	private final int cols;
+	private final Piece[][] gameState;
+	private final List<Piece> blackPieces;
+	private final List<Piece> whitePieces;
+	private final ZobristHashCalculator hashCalculator;
+
+	private long zobristHash;
 
 	public Board(Piece[][] gameState) {
-		this.blackPieces = new ArrayList<Piece>();
-		this.whitePieces = new ArrayList<Piece>();
+		this.blackPieces = new ArrayList<>();
+		this.whitePieces = new ArrayList<>();
 		this.rows = gameState.length;
 		this.cols = gameState[0].length;
 		this.gameState = new Piece[this.rows][this.cols];
@@ -25,7 +30,7 @@ public class Board {
 				Piece piece = gameState[row][col];
 				if(piece != null) {
 					this.gameState[row][col] = new Piece(piece);
-					if(piece.getColor()) {
+					if(piece.isBlack()) {
 						this.blackPieces.add(this.gameState[row][col]);
 					} else {
 						this.whitePieces.add(this.gameState[row][col]);
@@ -33,6 +38,9 @@ public class Board {
 				}
 			}
 		}
+
+		this.hashCalculator = new ZobristHashCalculator(rows, cols);
+		this.zobristHash = hashCalculator.calculateHash(this);
 	}
 	
 	public Board(int rows, int cols, boolean blackInUpperLeftCorner) {
@@ -40,12 +48,12 @@ public class Board {
 		this.cols = cols;
 
 		this.gameState = new Piece[this.rows][this.cols];
-		this.blackPieces = new ArrayList<Piece>();
-		this.whitePieces = new ArrayList<Piece>();
+		this.blackPieces = new ArrayList<>();
+		this.whitePieces = new ArrayList<>();
 
 		for (int row = 0; row < this.rows; row++) {
 			for (int col = 0; col < this.cols; col++) {
-				Piece piece = null;
+				Piece piece;
 				if ((col + row) % 2 == 0) {
 					// insert starting color piece
 					piece = new Piece(row, col, blackInUpperLeftCorner);
@@ -73,7 +81,7 @@ public class Board {
 		Piece firstRemove = this.gameState[rows / 2][cols / 2 - 1];
 		Piece secondRemove = this.gameState[rows / 2][cols / 2];
 		
-		if(firstRemove.getColor()) {
+		if(firstRemove.isBlack()) {
 			this.blackPieces.remove(firstRemove);
 			this.whitePieces.remove(secondRemove);
 		} else {
@@ -83,6 +91,8 @@ public class Board {
 		
 		this.gameState[rows / 2][cols / 2 - 1] = null;
 		this.gameState[rows / 2][cols / 2] = null;
+		this.hashCalculator = new ZobristHashCalculator(rows,cols);
+		this.zobristHash = hashCalculator.calculateHash(this);
 	}
 
 	public Board(Board board) {
@@ -90,8 +100,8 @@ public class Board {
 		this.cols = board.cols;
 
 		this.gameState = new Piece[board.rows][board.cols];
-		this.blackPieces = new ArrayList<Piece>();
-		this.whitePieces = new ArrayList<Piece>();
+		this.blackPieces = new ArrayList<>();
+		this.whitePieces = new ArrayList<>();
 
 		for (Piece piece : board.blackPieces) {
 			Piece copy = new Piece(piece);
@@ -104,6 +114,9 @@ public class Board {
 			this.whitePieces.add(copy);
 			this.gameState[copy.getRow()][copy.getCol()] = copy;
 		}
+
+		this.hashCalculator = board.hashCalculator;
+		this.zobristHash = board.zobristHash;
 	}
 
 	public void executeMove(Move move) {
@@ -117,7 +130,7 @@ public class Board {
 		if (deltaCol > 0) { // move right
 			for (int col = move.getSourceCol() + 1; col < move.getTargetCol(); col++) {
 				Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-				if(capturedPiece != null && capturedPiece.getColor() != movingPiece.getColor()) {
+				if(capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
 					this.removePiece(capturedPiece);
 					move.getCapturedPieces().add(capturedPiece);
 				}
@@ -125,7 +138,7 @@ public class Board {
 		} else if (deltaCol < 0) { // move left
 			for (int col = move.getSourceCol() - 1; col > move.getTargetCol(); col--) {
 				Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-				if(capturedPiece != null && capturedPiece.getColor() != movingPiece.getColor()) {
+				if(capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
 					this.removePiece(capturedPiece);
 					move.getCapturedPieces().add(capturedPiece);
 				}
@@ -133,7 +146,7 @@ public class Board {
 		} else if (deltaRow > 0) { // move down
 			for (int row = move.getSourceRow() + 1; row < move.getTargetRow(); row++) {
 				Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-				if(capturedPiece != null && capturedPiece.getColor() != movingPiece.getColor()) {
+				if(capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
 					this.removePiece(capturedPiece);
 					move.getCapturedPieces().add(capturedPiece);
 				}
@@ -141,7 +154,7 @@ public class Board {
 		} else if (deltaRow < 0) { // move up
 			for (int row = move.getSourceRow() - 1; row > move.getTargetRow(); row--) {
 				Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-				if(capturedPiece != null && capturedPiece.getColor() != movingPiece.getColor()) {
+				if(capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
 					this.removePiece(capturedPiece);
 					move.getCapturedPieces().add(capturedPiece);
 				}
@@ -151,8 +164,7 @@ public class Board {
 		movingPiece.setRow(move.getTargetRow());
 		movingPiece.setCol(move.getTargetCol());
 		this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
-		// this.zobristHash = ZobristHashCalculator.UpdateHash(this.zobristHash,
-		// movingPiece, move);
+		this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
 	}
 
 	public void revertMove(Move move) {
@@ -163,7 +175,7 @@ public class Board {
 		for (Piece piece : move.getCapturedPieces()) {
 			this.gameState[piece.getRow()][piece.getCol()] = piece;
 
-			if (piece.getColor()) {
+			if (piece.isBlack()) {
 				this.blackPieces.add(piece);
 			} else {
 				this.whitePieces.add(piece);
@@ -173,15 +185,12 @@ public class Board {
 		movingPiece.setRow(move.getSourceRow());
 		movingPiece.setCol(move.getSourceCol());
 		this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
-		// this.zobristHash = ZobristHashCalculator.UpdateHash(this.zobristHash,
-		// movingPiece, move);
+        this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
 		move.getCapturedPieces().clear();
 	}
 
 	public Board simplify() {
-		Board board = new Board(this);
-
-		return board;
+		return new Board(this);
 	}
 
 	public Board negate() {
@@ -191,32 +200,23 @@ public class Board {
 			for(int col = 0; col < board.cols; col++) {
 				Piece piece = board.gameState[row][col];
 				if(piece != null) {
-					piece.setColor(!piece.getColor());
+					piece.setIsBlack(!piece.isBlack());
 				}
 			}
 		}
-		
-		List<Piece> temp = board.blackPieces;
-		board.blackPieces = board.whitePieces;
-		board.whitePieces = temp;
-		
+
+		List<Piece> temp = new ArrayList<>(board.blackPieces);
+		board.blackPieces.clear();
+		board.blackPieces.addAll(this.whitePieces);
+		board.whitePieces.clear();
+		board.whitePieces.addAll(temp);
+
+		board.zobristHash = board.hashCalculator.calculateHash(board);
 		return board;
 	}
 
-	// public Board add(Board board) {
-	//
-	// }
-	//
-	// public Board subtract(Board board) {
-	//
-	// }
-
-	public boolean isGameOver() {
-		return this.getLeftOptions().isEmpty() || this.getRightOptions().isEmpty();
-	}
-
 	public List<Move> getLeftOptions() {
-		List<Move> moves = new ArrayList<Move>();
+		List<Move> moves = new ArrayList<>();
 
 		for (Piece piece : this.blackPieces) {
 			moves.addAll(this.getValidMoves(piece));
@@ -226,7 +226,7 @@ public class Board {
 	}
 
 	public List<Move> getRightOptions() {
-		List<Move> moves = new ArrayList<Move>();
+		List<Move> moves = new ArrayList<>();
 
 		for (Piece piece : this.whitePieces) {
 			moves.addAll(this.getValidMoves(piece));
@@ -247,7 +247,7 @@ public class Board {
 			for (int col = 0; col < this.cols; col++) {
 				Piece piece = this.gameState[row][col];
 				if (piece != null) {
-					if (piece.getColor()) {
+					if (piece.isBlack()) {
 						ret += "B|";
 					} else {
 						ret += "W|";
@@ -283,20 +283,20 @@ public class Board {
 	}
 
 	private List<Move> getValidMoves(Piece piece) {
-		List<Move> moves = new ArrayList<Move>();
+		List<Move> moves = new ArrayList<>();
 
 		int row = piece.getRow();
 		int col = piece.getCol();
 
 		if (row - 2 >= 0 && this.gameState[row - 1][col] != null
-				&& this.gameState[row - 1][col].getColor() != piece.getColor()
+				&& this.gameState[row - 1][col].isBlack() != piece.isBlack()
 				&& this.gameState[row - 2][col] == null) {
 
 			// Single jump possible, but maybe there is also a double jump
 			// possible
 
 			if (row - 4 >= 0 && this.gameState[row - 3][col] != null
-					&& this.gameState[row - 3][col].getColor() != piece.getColor()
+					&& this.gameState[row - 3][col].isBlack() != piece.isBlack()
 					&& this.gameState[row - 4][col] == null) {
 				// Double jump possible
 				moves.add(new Move(row, col, row - 4, col));
@@ -307,14 +307,14 @@ public class Board {
 		}
 
 		if (row + 2 < this.rows && this.gameState[row + 1][col] != null
-				&& this.gameState[row + 1][col].getColor() != piece.getColor()
+				&& this.gameState[row + 1][col].isBlack() != piece.isBlack()
 				&& this.gameState[row + 2][col] == null) {
 
 			// Single jump possible, but maybe there is also a double jump
 			// possible
 
 			if (row + 4 < this.rows && this.gameState[row + 3][col] != null
-					&& this.gameState[row + 3][col].getColor() != piece.getColor()
+					&& this.gameState[row + 3][col].isBlack() != piece.isBlack()
 					&& this.gameState[row + 4][col] == null) {
 				// Double jump possible
 				moves.add(new Move(row, col, row + 4, col));
@@ -325,14 +325,14 @@ public class Board {
 		}
 
 		if (col - 2 >= 0 && this.gameState[row][col - 1] != null
-				&& this.gameState[row][col - 1].getColor() != piece.getColor()
+				&& this.gameState[row][col - 1].isBlack() != piece.isBlack()
 				&& this.gameState[row][col - 2] == null) {
 
 			// Single jump possible, but maybe there is also a double jump
 			// possible
 
 			if (col - 4 >= 0 && this.gameState[row][col - 3] != null
-					&& this.gameState[row][col - 3].getColor() != piece.getColor()
+					&& this.gameState[row][col - 3].isBlack() != piece.isBlack()
 					&& this.gameState[row][col - 4] == null) {
 				// Double jump possible
 				moves.add(new Move(row, col, row, col - 4));
@@ -343,14 +343,14 @@ public class Board {
 		}
 
 		if (col + 2 < this.cols && this.gameState[row][col + 1] != null
-				&& this.gameState[row][col + 1].getColor() != piece.getColor()
+				&& this.gameState[row][col + 1].isBlack() != piece.isBlack()
 				&& this.gameState[row][col + 2] == null) {
 
 			// Single jump possible, but maybe there is also a double jump
 			// possible
 
 			if (col + 4 < this.cols && this.gameState[row][col + 3] != null
-					&& this.gameState[row][col + 3].getColor() != piece.getColor()
+					&& this.gameState[row][col + 3].isBlack() != piece.isBlack()
 					&& this.gameState[row][col + 4] == null) {
 				// Double jump possible
 				moves.add(new Move(row, col, row, col + 4));
@@ -364,11 +364,19 @@ public class Board {
 	}
 
 	private void removePiece(Piece piece) {
-		if (piece.getColor()) {
+		if (piece.isBlack()) {
 			this.blackPieces.remove(piece);
 		} else {
 			this.whitePieces.remove(piece);
 		}
 		this.gameState[piece.getRow()][piece.getCol()] = null;
+	}
+
+	public Piece getPieceAtPosition(int row, int col){
+		return gameState[row][col];
+	}
+
+	public long getZobristHash() {
+		return zobristHash;
 	}
 }

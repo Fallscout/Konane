@@ -20,7 +20,7 @@ public class Controller {
 		CGTSolver solver = new CGTSolver();
 //		AlphaBetaSolver solver = new AlphaBetaSolver();
 		
-		OutcomeType result = solver.solve(board, true);
+		OutcomeType result = solver.solve(board);
 		
 		System.out.println(result);
 	}

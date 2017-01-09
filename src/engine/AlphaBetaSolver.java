@@ -45,7 +45,7 @@ public class AlphaBetaSolver {
 	}
 	
 	private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
-		List<Move> availableMoves = null;
+		List<Move> availableMoves;
 		if(blackTurn) {
 			availableMoves = board.getLeftOptions();
 		} else {
@@ -57,7 +57,7 @@ public class AlphaBetaSolver {
 		}
 		
 		int score = Integer.MIN_VALUE;
-		int value = 0;
+		int value;
 		
 		for(Move move : availableMoves) {
 			board.executeMove(move);
