@@ -53,6 +53,7 @@ public class CGTSolver {
             }
         }
 
+        // Get the possible options of both players
         List<Move> leftOptions = board.getLeftOptions();
         List<Move> rightOptions = board.getRightOptions();
         // remark: if left's best option is positive and right's best option is
@@ -65,41 +66,39 @@ public class CGTSolver {
         Move bestLeftOption = null;
         Move bestRightOption = null;
 
-        if (leftOptions.isEmpty() && rightOptions.isEmpty()) {
-            // { | } = 0 (Berlekamp et al., p.27)
-            cgtValue = new Number(0);
-        } else {
-            CGTValue leftOutcome = null;
-            CGTValue rightOutcome = null;
+        CGTValue leftOutcome = null;
+        CGTValue rightOutcome = null;
 
-            for (Move option : leftOptions) {
-                board.executeMove(option);
-                CGTValue value = calculate(board);
-                board.revertMove(option);
+        // Calculate values of left options
+        for (Move option : leftOptions) {
+            board.executeMove(option);
+            CGTValue value = calculate(board);
+            board.revertMove(option);
 
-                CGTValue max = CGTValue.max(leftOutcome, value);
-                if (max != leftOutcome) {
-                    bestLeftOption = option;
-                    leftOutcome = max;
-                }
+            CGTValue max = CGTValue.max(leftOutcome, value);
+            if (max != leftOutcome) {
+                bestLeftOption = option;
+                leftOutcome = max;
             }
-
-            for (Move option : rightOptions) {
-                board.executeMove(option);
-                CGTValue value = calculate(board);
-                board.revertMove(option);
-
-                CGTValue max = CGTValue.max(rightOutcome, value);
-                if (max != rightOutcome) {
-                    bestRightOption = option;
-                    rightOutcome = max;
-                }
-            }
-
-            cgtValue = CGTValue.getOutcome(leftOutcome, rightOutcome);
         }
 
+        // Calculate values of right options
+        for (Move option : rightOptions) {
+            board.executeMove(option);
+            CGTValue value = calculate(board);
+            board.revertMove(option);
+
+            CGTValue max = CGTValue.max(rightOutcome, value);
+            if (max != rightOutcome) {
+                bestRightOption = option;
+                rightOutcome = max;
+            }
+        }
+
+        // Get the final outcome and store it in the transposition table
+        cgtValue = CGTValue.getOutcome(leftOutcome, rightOutcome);
         tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, cgtValue);
+
         return cgtValue;
     }
 
