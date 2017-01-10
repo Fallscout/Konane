@@ -10,6 +10,12 @@ public class CGTSolver {
 
     private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 
+    /**
+     * Solves a given board and returns the {@link OutcomeType}
+     *
+     * @param board The board that shall be solved
+     * @return The {@link OutcomeType} of the game (FIRST, SECOND, BLACK, WHITE)
+     */
     public OutcomeType solve(Board board) {
 
         CGTValue result = this.calculate(board);
@@ -42,6 +48,13 @@ public class CGTSolver {
         return null;
     }
 
+    /**
+     * Returns the CGTValue of the given <code>board</code>.
+     *
+     * @param board The board one wants to calculate the {@link CGTValue} for.
+     * @return The board's value
+     */
+    //TODO: https://github.com/Fallscout/Konane/issues/3
     private CGTValue calculate(Board board) {
 
         // Lookup in TT
@@ -139,6 +152,10 @@ public class CGTSolver {
         return null;
     }
 
+    /** This method returns the primary hash code by using a bit mask
+     * @param zobristHash The complete hash
+     * @return the primary hash code
+     */
     private int getIndexOfHash(long zobristHash) {
         return (int) Math.abs(zobristHash & 0xFFFFFF);
     }
