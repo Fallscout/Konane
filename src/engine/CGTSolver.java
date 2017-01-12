@@ -55,7 +55,7 @@ public class CGTSolver {
      * @return The board's value
      */
     //TODO: https://github.com/Fallscout/Konane/issues/3
-    private CGTValue calculate(Board board) {
+    public CGTValue calculate(Board board) {
 
         // Lookup in TT
         long boardHash = board.getZobristHash();

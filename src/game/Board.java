@@ -362,6 +362,10 @@ public class Board {
 
 		return moves;
 	}
+	
+	public boolean isEndgame() {
+		return false;
+	}
 
 	private void removePiece(Piece piece) {
 		if (piece.isBlack()) {

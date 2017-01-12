@@ -9,7 +9,7 @@ public class Controller {
 //		Board board = new Board(6, 6, false);
 		
 		Board board = new Board(new Piece[][] {
-			{null, null, new Piece(0, 2, true), null},
+			{null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
 			{new Piece(1, 0, false), null, null, null},
 			{new Piece(2, 0, true), null, null, new Piece(2, 3, false)},
 			{null, null, null, null}

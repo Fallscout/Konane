@@ -3,7 +3,7 @@ package engine;
 public abstract class CGTValue {
 
     /**
-     * Adds two CGTValues into a new CGTValue object (as long as this is allowed)
+     * Adds two CGTValues into a new CGTValue object (if possible)
      *
      * @param other The other CGTValue that shall be added
      * @return The sum of the two CGTValues
@@ -11,13 +11,6 @@ public abstract class CGTValue {
      */
     public abstract CGTValue add(CGTValue other) throws IllegalAdditionException;
 
-    public abstract String toString();
-
-    /**
-     * @param leftValue  The result of choosing left's best option
-     * @param rightValue The result of choosing right's best option
-     * @return
-     */
     //TODO: https://github.com/Fallscout/Konane/issues/2
     public static CGTValue getOutcome(CGTValue leftValue, CGTValue rightValue) {
         if (leftValue == null && rightValue == null) {
@@ -132,9 +125,11 @@ public abstract class CGTValue {
             }
         }
 
-        throw new IllegalArgumentException(
-            "Not implemented for classes: left: " + (leftValue == null ? "null" : leftValue.getClass()) + ", right: " + (
-                rightValue == null ? "null" : rightValue.getClass()) + ".");
+        //If value cannot be simplified, return nothing and carry on with Alpha-Beta-Search
+        return null;
+//        throw new IllegalArgumentException(
+//            "Not implemented for classes: left: " + (leftValue == null ? "null" : leftValue.getClass()) + ", right: " + (
+//                rightValue == null ? "null" : rightValue.getClass()) + ".");
     }
 
     public static CGTValue max(CGTValue firstValue, CGTValue secondValue) {
@@ -188,5 +183,27 @@ public abstract class CGTValue {
         }
 
         return null;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	// TODO Auto-generated method stub
+    	return super.equals(obj);
+    }
+    
+    public boolean leq(CGTValue other) {
+    	throw new UnsupportedOperationException("Not yet implemented.");
+    }
+    
+    public boolean geq(CGTValue other) {
+    	throw new UnsupportedOperationException("Not yet implemented.");
+    }
+    
+    public boolean lss(CGTValue other) {
+    	throw new UnsupportedOperationException("Not yet implemented.");
+    }
+    
+    public boolean gtr(CGTValue other) {
+    	throw new UnsupportedOperationException("Not yet implemented.");
     }
 }
