@@ -8,17 +8,6 @@ public class Number extends CGTValue {
         this.value = value;
     }
 
-    @Override
-    public CGTValue add(CGTValue other) throws IllegalAdditionException {
-        if (other instanceof Number) {
-            Number otherNumber = (Number) other;
-            return new Number(value + otherNumber.value);
-        } else {
-            throw new IllegalAdditionException("The addition of the two CGTValues (" + this + ", " + other
-                + ") is not allowed: Not yet implemented");
-        }
-    }
-
     public double getValue() {
         return value;
     }
@@ -26,5 +15,21 @@ public class Number extends CGTValue {
     @Override
     public String toString() {
         return "Number{" + "value=" + value + '}';
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Number number = (Number) o;
+
+        return Double.compare(number.value, value) == 0;
+    }
+
+    @Override public int hashCode() {
+        long temp = Double.doubleToLongBits(value);
+        return (int) (temp ^ (temp >>> 32));
     }
 }

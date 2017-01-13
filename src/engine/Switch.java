@@ -14,17 +14,6 @@ public class Switch extends CGTValue {
         this.right = right;
     }
 
-    @Override
-    public CGTValue add(CGTValue other) throws IllegalAdditionException {
-        if (other instanceof Switch) {
-            Switch otherSwitch = (Switch) other;
-            return new Switch((Number) getLeft().add(otherSwitch.getLeft()), (Number) getRight().add(otherSwitch.getRight()));
-        } else {
-            throw new IllegalAdditionException("The addition of the two CGTValues (" + this + ", " + other
-                + ") is not allowed: Not yet implemented");
-        }
-    }
-
     public Number getLeft() {
         return left;
     }
@@ -36,5 +25,24 @@ public class Switch extends CGTValue {
     @Override
     public String toString() {
         return "Switch{" + "left=" + left + ", right=" + right + '}';
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Switch aSwitch = (Switch) o;
+
+        if (left != null ? !left.equals(aSwitch.left) : aSwitch.left != null)
+            return false;
+        return right != null ? right.equals(aSwitch.right) : aSwitch.right == null;
+    }
+
+    @Override public int hashCode() {
+        int result = left != null ? left.hashCode() : 0;
+        result = 31 * result + (right != null ? right.hashCode() : 0);
+        return result;
     }
 }
