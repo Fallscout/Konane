@@ -22,7 +22,7 @@ public class ABCGTSolver {
 			board.executeMove(move);
 			blackOutcome = solve(board, false, new Number(-100), new Number(100), 1);
 			board.revertMove(move);
-			if(blackOutcome.gtr(ZERO)) {
+			if(blackOutcome.greater(ZERO)) {
 				break;
 			}
 		}
@@ -33,7 +33,7 @@ public class ABCGTSolver {
 			board.executeMove(move);
 			whiteOutcome = solve(board, true, new Number(-100), new Number(100), 1);
 			board.revertMove(move);
-			if(whiteOutcome.lss(ZERO)) {
+			if(whiteOutcome.less(ZERO)) {
 				break;
 			}
 		}
@@ -73,8 +73,8 @@ public class ABCGTSolver {
 				value = solve(board, !blackTurn, alpha, beta, ply+1);
 				board.revertMove(move);
 				
-				if(value.geq(beta)) return beta;
-				if(value.gtr(alpha)) alpha = value;
+				if(value.greaterEqual(beta)) return beta;
+				if(value.greater(alpha)) alpha = value;
 			}
 		} else {
 			for(Move move : availableMoves) {
@@ -82,8 +82,8 @@ public class ABCGTSolver {
 				value = solve(board, !blackTurn, alpha, beta, ply+1);
 				board.revertMove(move);
 				
-				if(value.leq(alpha)) return alpha;
-				if(value.lss(beta)) beta = value;
+				if(value.lessEquals(alpha)) return alpha;
+				if(value.less(beta)) beta = value;
 			}
 		}
 		
