@@ -1,14 +1,13 @@
 package game;
 
-import engine.AlphaBetaSolver;
 import engine.CGTSolver;
 import engine.OutcomeType;
 
 public class Controller {
 
 	public static void main(String[] args) {
-		Board board = new Board(5, 5, false);
-		
+		Board board = new Board(6, 6, false);
+
 //		Board board = new Board(new Piece[][] {
 //			{null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
 //			{new Piece(1, 0, false), null, null, null},
@@ -17,10 +16,10 @@ public class Controller {
 //		});
 		
 		System.out.println(board.getBoardRepresentation());
-		
-//		CGTSolver solver = new CGTSolver();
-		AlphaBetaSolver solver = new AlphaBetaSolver();
-		
+
+		CGTSolver solver = new CGTSolver();
+//		AlphaBetaSolver solver = new AlphaBetaSolver();
+
 		OutcomeType result = solver.solve(board);
 		
 		System.out.println(result);

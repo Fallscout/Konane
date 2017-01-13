@@ -38,7 +38,7 @@ public class AlphaBetaSolver {
 				break;
 			}
 		}
-
+		System.out.println("Alpha-Beta solver:");
 		System.out.println("Counter - nodes visited: " + counter);
 		System.out.println("Cutoffs absolute: "+ cutoffs);
 		System.out.println("Cutoffs first move (%): " + (cutoffsFirstMove / (cutoffs+0.0)));

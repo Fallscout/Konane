@@ -9,7 +9,8 @@ import game.Piece;
 public class CGTSolver {
 
     private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
-
+    private int counterPostTT = 0;
+    private int counterPreTT = 0;
     /**
      * Solves a given board and returns the {@link OutcomeType}
      *
@@ -19,6 +20,12 @@ public class CGTSolver {
     public OutcomeType solve(Board board) {
 
         CGTValue result = this.calculate(board);
+        System.out.println("CGT Solver:");
+        System.out.println("Counter - nodes visited: "+ counterPostTT);
+        System.out.println("Counter - nodes looked up in TT: "+ (counterPreTT-counterPostTT));
+
+        counterPreTT=0;
+        counterPostTT=0;
 
         System.out.println("Result: " + result);
 
@@ -56,7 +63,7 @@ public class CGTSolver {
      */
     //TODO: https://github.com/Fallscout/Konane/issues/3
     public CGTValue calculate(Board board) {
-
+        counterPreTT++;
         // Lookup in TT
         long boardHash = board.getZobristHash();
         TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
@@ -65,6 +72,7 @@ public class CGTSolver {
                 return ttEntry.getCgtValue();
             }
         }
+        counterPostTT++;
 
         // Get the possible options of both players
         List<Move> leftOptions = board.getLeftOptions();
