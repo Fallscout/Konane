@@ -37,7 +37,6 @@ public class ABCGTSolver {
 				break;
 			}
 		}
-		
 		return this.determineWinner(blackOutcome, whiteOutcome);
 	}
 	
@@ -48,7 +47,6 @@ public class ABCGTSolver {
 		} else {
 			availableMoves = board.getRightOptions();
 		}
-		
 		if(availableMoves.isEmpty()) {
 			if(blackTurn) {
 				return new Number(-1); //White wins
@@ -92,21 +90,23 @@ public class ABCGTSolver {
 	
 	private OutcomeType determineWinner(CGTValue black, CGTValue white) {
 		if(black == null && white == null) {
-			
+			throw new IllegalStateException("CGT Values can't be null (BOTH NULL)");
 		}
 		else if(black == null && white != null) {
-			
+			throw new IllegalStateException("CGT Values can't be null (BLACK NULL)");
 		}
 		else if(black != null && white == null) {
-			
+			throw new IllegalStateException("CGT Values can't be null (WHITE NULL)");
 		} else {
 			if(black instanceof Number) {
+				double blackValue = ((Number) black).getValue();
 				if(white instanceof Number) {
-					
+					double whiteValue = ((Number) white).getValue();
+
 				} else if(white instanceof Nimber) {
-					
+
 				} else if(white instanceof Switch) {
-					
+
 				} else if(white instanceof Infinitesimal) {
 					
 				}
