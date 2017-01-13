@@ -5,7 +5,7 @@ public class Infinitesimal extends CGTValue {
 
 	public Infinitesimal(int value){
 	    if(value == 0){
-	        throw new IllegalArgumentException("The Infinitesimal mustn't be 0");
+	        throw new IllegalArgumentException("The Infinitesimal must not be 0");
         }
         this.value = value;
     }

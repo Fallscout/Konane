@@ -1,7 +1,6 @@
 package game;
 
-import engine.CGTSolver;
-import engine.OutcomeType;
+import engine.*;
 
 public class Controller {
 
@@ -17,8 +16,9 @@ public class Controller {
 		
 		System.out.println(board.getBoardRepresentation());
 
-		CGTSolver solver = new CGTSolver();
+//		CGTSolver solver = new CGTSolver();
 //		AlphaBetaSolver solver = new AlphaBetaSolver();
+		ABCGTSolver solver = new ABCGTSolver();
 
 		OutcomeType result = solver.solve(board);
 		

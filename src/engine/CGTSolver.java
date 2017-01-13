@@ -96,7 +96,7 @@ public class CGTSolver {
             CGTValue value = calculate(board);
             board.revertMove(option);
 
-            CGTValue max = CGTValue.max(leftOutcome, value);
+            CGTValue max = CGTValue.max(leftOutcome, value, true);
             if (max != leftOutcome) {
                 bestLeftOption = option;
                 leftOutcome = max;
@@ -109,7 +109,7 @@ public class CGTSolver {
             CGTValue value = calculate(board);
             board.revertMove(option);
 
-            CGTValue max = CGTValue.max(rightOutcome, value);
+            CGTValue max = CGTValue.max(rightOutcome, value, false);
             if (max != rightOutcome) {
                 bestRightOption = option;
                 rightOutcome = max;
@@ -123,42 +123,42 @@ public class CGTSolver {
         return cgtValue;
     }
 
-    private CGTValue LT(Piece[] row, Piece[] col) {
-        return null;
-    }
-
-    private CGTValue LOT(Piece[] row, Piece[] col, int offset) {
-        return null;
-    }
-
-    private CGTValue L(Piece[] row) {
-        int length = 0;
-        boolean lastBlack = false;
-        for (Piece piece : row) {
-            if (piece != null) {
-                if (piece.isBlack() && !lastBlack) {
-                    length++;
-                    lastBlack = true;
-                } else if (piece.isBlack() && lastBlack) {
-                    length = 0;
-                } else if (!piece.isBlack() && lastBlack) {
-                    length++;
-                } else if (!piece.isBlack() && !lastBlack) {
-                    length = 0;
-                }
-            }
-        }
-
-        if (length % 2 == 1) {
-            return new Number(-(length / 2));
-        } else if (length % 4 == 0) {
-            return new Number(0);
-        } else if (length % 4 == 2) {
-            return new Nimber(1);
-        }
-
-        return null;
-    }
+//    private CGTValue LT(Piece[] row, Piece[] col) {
+//        return null;
+//    }
+//
+//    private CGTValue LOT(Piece[] row, Piece[] col, int offset) {
+//        return null;
+//    }
+//
+//    private CGTValue L(Piece[] row) {
+//        int length = 0;
+//        boolean lastBlack = false;
+//        for (Piece piece : row) {
+//            if (piece != null) {
+//                if (piece.isBlack() && !lastBlack) {
+//                    length++;
+//                    lastBlack = true;
+//                } else if (piece.isBlack() && lastBlack) {
+//                    length = 0;
+//                } else if (!piece.isBlack() && lastBlack) {
+//                    length++;
+//                } else if (!piece.isBlack() && !lastBlack) {
+//                    length = 0;
+//                }
+//            }
+//        }
+//
+//        if (length % 2 == 1) {
+//            return new Number(-(length / 2));
+//        } else if (length % 4 == 0) {
+//            return new Number(0);
+//        } else if (length % 4 == 2) {
+//            return new Nimber(1);
+//        }
+//
+//        return null;
+//    }
 
     /** This method returns the primary hash code by using a bit mask
      * @param zobristHash The complete hash
