@@ -6,7 +6,6 @@ import game.Board;
 import game.Move;
 
 import java.util.Collections;
-import java.util.List;
 
 public class ABCGTSolver {
 
