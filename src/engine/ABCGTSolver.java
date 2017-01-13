@@ -42,8 +42,8 @@ public class ABCGTSolver {
                 break;
             }
         }
-
-        return this.determineWinner(blackOutcome, whiteOutcome);
+        CGTValue outcome = CGTValue.getOutcome(blackOutcome, whiteOutcome);
+        return this.determineWinner(outcome);
     }
 
     private void moveOrdering(List<Move> moves, Board board, boolean blacksMove) {
@@ -150,58 +150,18 @@ public class ABCGTSolver {
         return returnValue;
     }
 
-    private OutcomeType determineWinner(CGTValue black, CGTValue white) {
-        if (black == null && white == null) {
-
-        } else if (black == null && white != null) {
-
-        } else if (black != null && white == null) {
-
-        } else {
-            if (black instanceof Number) {
-                if (white instanceof Number) {
-
-                } else if (white instanceof Nimber) {
-
-                } else if (white instanceof Switch) {
-
-                } else if (white instanceof Infinitesimal) {
-
-                }
-            } else if (black instanceof Nimber) {
-                if (white instanceof Number) {
-
-                } else if (white instanceof Nimber) {
-
-                } else if (white instanceof Switch) {
-
-                } else if (white instanceof Infinitesimal) {
-
-                }
-            } else if (black instanceof Switch) {
-                if (white instanceof Number) {
-
-                } else if (white instanceof Nimber) {
-
-                } else if (white instanceof Switch) {
-
-                } else if (white instanceof Infinitesimal) {
-
-                }
-            } else if (black instanceof Infinitesimal) {
-                if (white instanceof Number) {
-
-                } else if (white instanceof Nimber) {
-
-                } else if (white instanceof Switch) {
-
-                } else if (white instanceof Infinitesimal) {
-
-                }
+    private OutcomeType determineWinner(CGTValue outcome) {
+        if (outcome instanceof Number){
+            double value = ((Number) outcome).getValue();
+            if (value<0){
+                return OutcomeType.WHITE;
+            }else if(value==0){
+                return OutcomeType.SECOND;
+            }else{
+                return OutcomeType.BLACK;
             }
         }
-
-        throw new IllegalArgumentException("Cannot determine winner for given values.");
+        return OutcomeType.FIRST;
     }
 
     /**
