@@ -80,16 +80,59 @@ public abstract class CGTValue {
                     return new Number(right.getValue() - 1);
                 }
             } else if (rightValue instanceof Nimber) {
-                Nimber right = (Nimber) rightValue;
                 if(left.getValue() > 0){
-                    return new Nimber(1);
-                }else{
+                    return new Number(left.getValue());
+                }else if(left.getValue() == 0){
                     return new Infinitesimal(1);
+                }else{
+                    return new Number(0);
                 }
             } else if (rightValue instanceof Switch) {
                 Switch right = (Switch) rightValue;
+                if(right.getLeft().getValue() > 0 && right.getRight().getValue() > 0){
+                    if(left.getValue() > 0){
+                        return new Number(left.getValue());
+                    }else if(left.getValue() == 0){
+                        return new Infinitesimal(1);
+                    }else{
+                        return new Number(0);
+                    }
+                }else if(right.getLeft().getValue() < 0 && right.getRight().getValue() < 0){
+                    if(left.getValue() > 0){
+                        return new Nimber(1);
+                    }else if(left.getValue() == 0){
+                        return new Nimber(1);
+                    }else{
+                        return new Number(left.getValue());
+                    }
+                }else{
+                    if(left.getValue() > 0){
+                        return new Number(left.getValue());
+                    }else if(left.getValue() == 0){
+                        return new Infinitesimal(1);
+                    }else{
+                        return new Number(0);
+                    }
+                }
             } else if (rightValue instanceof Infinitesimal) {
                 Infinitesimal right = (Infinitesimal) rightValue;
+                if(right.getValue() > 0) {
+                    if (left.getValue() > 0) {
+                        return new Number(left.getValue());
+                    } else if (left.getValue() == 0) {
+                        return new Infinitesimal(1);
+                    } else {
+                        return new Number(0);
+                    }
+                }else{
+                    if(left.getValue() > 0){
+                        return new Nimber(1);
+                    }else if(left.getValue() == 0){
+                        return new Nimber(1);
+                    }else{
+                        return new Number(left.getValue());
+                    }
+                }
             }
 
         } else if (leftValue instanceof Nimber) {
