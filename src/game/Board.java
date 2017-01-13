@@ -364,7 +364,10 @@ public class Board {
 	}
 	
 	public boolean isEndgame() {
-		return false;
+		int pieces = this.blackPieces.size()+this.whitePieces.size();
+		int halfBoardSize = (int) (this.cols*this.rows*0.5);
+		System.out.println("isEndgame:" + pieces +";"+halfBoardSize);
+		return pieces<Math.min(8, halfBoardSize);
 	}
 
 	private void removePiece(Piece piece) {
