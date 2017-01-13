@@ -15,6 +15,9 @@ public class ABCGTSolver {
     private static final CGTValue ONE = new Number(1);
     private static final CGTValue NEGATIVE_ONE = new Number(-1);
 
+    private int counter = 0;
+    private int counterTT = 0;
+
     //Remark: Cannot use NegaMax, because some CGTValues cannot be negated(?)
     public OutcomeType solve(Board board) {
         CGTValue blackOutcome = null;
@@ -41,6 +44,11 @@ public class ABCGTSolver {
                 break;
             }
         }
+
+        System.out.println("AB-CGT solver:");
+        System.out.println("Nodes looked up in TT: " + counterTT);
+        System.out.println("Node counter: " + counter);
+
         CGTValue outcome = CGTValue.getOutcome(blackOutcome, whiteOutcome);
         return this.determineWinner(outcome);
     }
@@ -76,15 +84,17 @@ public class ABCGTSolver {
     }
 
     private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
+
         // Lookup in TT
         long boardHash = board.getZobristHash();
         TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
         if (ttEntry != null) {
             if (ttEntry.getZobristHash() == boardHash) {
+                counterTT++;
                 return ttEntry.getCgtValue();
             }
         }
-
+        counter++;
         CGTValue returnValue = null;
         Move bestLeftOption = null;
         Move bestRightOption = null;
