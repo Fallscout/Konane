@@ -188,6 +188,39 @@ public class CGTValueTest {
 		max = CGTValue.max(new Number(-2), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
+	
+	@Test
+	public void max_Nimber_Number() {
+		//Black
+		CGTValue max = CGTValue.max(new Nimber(1), new Number(-3),  true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+		
+		max = CGTValue.max(new Nimber(1), new Number(3), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(3)));
+		//White
+		max = CGTValue.max(new Nimber(1), new Number(-3), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		
+		max = CGTValue.max(new Nimber(1), new Number(3), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+	}
+	
+	@Test
+	public void max_Number_Nimber() {
+		//Black
+		CGTValue max = CGTValue.max(new Number(-3), new Nimber(1),  true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+		
+		max = CGTValue.max(new Number(3), new Nimber(1),  true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(3)));
+
+		//White
+		max = CGTValue.max(new Number(-3), new Nimber(1), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		
+		max = CGTValue.max(new Number(3), new Nimber(1), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+	}
 
 	@Test
 	public void max_negNumber_Switch() {
@@ -279,6 +312,52 @@ public class CGTValueTest {
 
 		max = CGTValue.max(new Number(0), new Infinitesimal(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+	}
+	
+	@Test
+	public void max_Nimber_Infinitesimal() {
+		//TODO:Always prefer nimber? For both black and white??
+		CGTValue max = CGTValue.max(new Nimber(1), new Infinitesimal(1), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+
+		max = CGTValue.max(new Nimber(1), new Infinitesimal(1), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+	}
+	
+	@Test
+	public void max_Infinitesimal_Nimber() {
+		//TODO: Always prefer nimber? For both black and white??
+		CGTValue max = CGTValue.max(new Infinitesimal(1), new Nimber(1), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+
+		max = CGTValue.max(new Infinitesimal(1), new Nimber(1),  false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+	}
+	
+	@Test
+	public void max_Nimber_Switch() {
+		//TODO:Always prefer Switch? For both black and white??
+		Number first = new Number(2);
+		Number second = new Number(-3);
+		
+		CGTValue max = CGTValue.max(new Nimber(1), new Switch(first, second), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+
+		max = CGTValue.max(new Nimber(1), new Switch(first, second), false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+	}
+	
+	@Test
+	public void max_Switch_Nimber() {
+		//TODO: Always prefer Switch? For both black and white??
+		Number first = new Number(2);
+		Number second = new Number(-3);
+		
+		CGTValue max = CGTValue.max(new Switch(first, second), new Nimber(1), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+
+		max = CGTValue.max(new Switch(first, second), new Nimber(1),  false);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
 	
 	/*
