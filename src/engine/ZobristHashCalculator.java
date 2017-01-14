@@ -49,12 +49,12 @@ public class ZobristHashCalculator {
 
 	public long calculateHash(Board board) {
 		long hash = 0;
-		for (int x = 0; x < board.getCols(); x++) {
-			for (int y = 0; y < board.getRows(); y++) {
-				Piece piece = board.getPieceAtPosition(x, y);
+        for (int x = 0; x < board.getRows(); x++) {
+            for (int y = 0; y < board.getCols(); y++) {
+                Piece piece = board.getPieceAtPosition(x, y);
 				if (piece != null) {
-					hash ^= positionValue[y][x][getPieceValue(piece)];
-				}
+                    hash ^= positionValue[x][y][getPieceValue(piece)];
+                }
 			}
 		}
 		return hash;
