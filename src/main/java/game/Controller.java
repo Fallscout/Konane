@@ -3,26 +3,34 @@ package game;
 import engine.ABCGTSolver;
 import engine.OutcomeType;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 public class Controller {
 
-	public static void main(String[] args) {
-		Board board = new Board(4, 4, true);
+    public static void main(String[] args) {
+        Board board = new Board(5, 5, true);
 
-//		Board board = new Board(new Piece[][] {
-//			{null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
-//			{new Piece(1, 0, false), null, null, null},
-//			{new Piece(2, 0, true), null, null, new Piece(2, 3, false)},
-//			{null, null, null, null}
-//		});
-		
-		System.out.println(board.getBoardRepresentation());
+        //		Board board = new Board(new Piece[][] {
+        //			{null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
+        //			{new Piece(1, 0, false), null, null, null},
+        //			{new Piece(2, 0, true), null, null, new Piece(2, 3, false)},
+        //			{null, null, null, null}
+        //		});
 
-//		CGTSolver solver = new CGTSolver();
-//		AlphaBetaSolver solver = new AlphaBetaSolver();
-		ABCGTSolver solver = new ABCGTSolver();
+        System.out.println(board.getBoardRepresentation());
 
-		OutcomeType result = solver.solve(board);
-		
-		System.out.println(result);
-	}
+        //		CGTSolver solver = new CGTSolver();
+        //		AlphaBetaSolver solver = new AlphaBetaSolver();
+        ABCGTSolver solver = new ABCGTSolver();
+
+        try {
+            OutcomeType result = solver.solve(board);
+            System.out.println(result);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            solver.shutdown();
+        }
+    }
 }
