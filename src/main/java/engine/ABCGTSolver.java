@@ -166,18 +166,56 @@ public class ABCGTSolver {
 		return returnValue;
 	}
 
-    private OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
-        //		if (outcome instanceof Number) {
-        //			double value = ((Number) outcome).getValue();
-        //			if (value < 0) {
-        //				return OutcomeType.WHITE;
-        //			} else if (value == 0) {
-        //				return OutcomeType.SECOND;
-        //			} else {
-        //				return OutcomeType.BLACK;
-        //			}
-        //		}
-        return OutcomeType.FIRST;
+    public OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
+    	if(blackOutcome instanceof Number) {
+    		if(whiteOutcome instanceof Number) {
+    			//Black win
+    			
+    			//White win
+    			
+    			//Second win
+    			
+    			//First win
+    		} else if(whiteOutcome instanceof Nimber) {
+    			
+    		} else if(whiteOutcome instanceof Switch) {
+    			
+    		} else if(whiteOutcome instanceof Infinitesimal) {
+    			
+    		}
+    	} else if(blackOutcome instanceof Nimber) {
+    		if(whiteOutcome instanceof Number) {
+        		
+    		} else if(whiteOutcome instanceof Nimber) {
+    			
+    		} else if(whiteOutcome instanceof Switch) {
+    			
+    		} else if(whiteOutcome instanceof Infinitesimal) {
+    			
+    		}
+    	} else if(blackOutcome instanceof Switch) {
+    		if(whiteOutcome instanceof Number) {
+        		
+    		} else if(whiteOutcome instanceof Nimber) {
+    			
+    		} else if(whiteOutcome instanceof Switch) {
+    			
+    		} else if(whiteOutcome instanceof Infinitesimal) {
+    			
+    		}
+    	} else if(blackOutcome instanceof Infinitesimal) {
+    		if(whiteOutcome instanceof Number) {
+        		
+    		} else if(whiteOutcome instanceof Nimber) {
+    			
+    		} else if(whiteOutcome instanceof Switch) {
+    			
+    		} else if(whiteOutcome instanceof Infinitesimal) {
+    			
+    		}
+    	}
+    	
+    	throw new IllegalArgumentException("Cannot determine winner.");
 	}
 
 	/**
