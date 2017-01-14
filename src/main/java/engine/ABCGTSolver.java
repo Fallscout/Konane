@@ -11,7 +11,7 @@ import java.util.Collections;
 public class ABCGTSolver {
 
 	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
-    private final CGTSolver cgtSolver = new CGTSolver();
+	private final CGTSolver cgtSolver = new CGTSolver();
 
 	private int counter = 0;
 	private int counterTT = 0;
@@ -20,7 +20,7 @@ public class ABCGTSolver {
 		CGTValue blackOutcome = null;
 		CGTValue whiteOutcome = null;
 
-        CGTValue value;
+		CGTValue value;
 
 		List<Move> blackMoves = board.getLeftOptions();
 		for (Move move : blackMoves) {
@@ -29,7 +29,7 @@ public class ABCGTSolver {
 			board.revertMove(move);
 			blackOutcome = CGTValue.max(value, blackOutcome, true);
 		}
-		
+
 		List<Move> whiteMoves = board.getRightOptions();
 		for (Move move : whiteMoves) {
 			board.executeMove(move);
@@ -41,11 +41,11 @@ public class ABCGTSolver {
 		System.out.println("AB-CGT solver:");
 		System.out.println("Nodes looked up in TT: " + counterTT);
 		System.out.println("Node counter: " + counter);
-        System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
-        System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
+		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
+		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
 
-        return this.determineWinner(blackOutcome, whiteOutcome);
-    }
+		return this.determineWinner(blackOutcome, whiteOutcome);
+	}
 
 	private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
 		int[] possibleOpponentsMoves = new int[moves.size()];
@@ -100,63 +100,63 @@ public class ABCGTSolver {
 			availableMoves = board.getRightOptions();
 		}
 
-        if (availableMoves.isEmpty()) {
-            if (blackTurn) {
-                returnValue = new Number(-1); // White wins
-            } else {
-                returnValue = new Number(1); // Black wins
-            }
-        } else {
-            orderMoves(availableMoves, board, blackTurn);
-        }
+		if (availableMoves.isEmpty()) {
+			if (blackTurn) {
+				returnValue = new Number(-1); // White wins
+			} else {
+				returnValue = new Number(1); // Black wins
+			}
+		} else {
+			orderMoves(availableMoves, board, blackTurn);
+		}
 
 		if (returnValue == null) {
 			if (board.isEndgame()) {
 				// Do CGT Stuff
-                returnValue = cgtSolver.calculate(board);
-            }
+				returnValue = cgtSolver.calculate(board);
+			}
 		}
 
 		CGTValue value;
 
 		if (returnValue == null) {
 			if (blackTurn) {
-                returnValue = new Number(-Double.MAX_VALUE);
-                for (Move move : availableMoves) {
+				returnValue = new Number(-Double.MAX_VALUE);
+				for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, false, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-                    if (CGTValue.greater(value, returnValue)) {
-                        returnValue = value;
-                    }
-
-                    if (CGTValue.greater(returnValue, alpha)) {
-                        alpha = returnValue;
-                        bestLeftOption = move;
+					if (CGTValue.greater(value, returnValue)) {
+						returnValue = value;
 					}
-                    if (CGTValue.lessEqual(beta, alpha)) {
-                        break;
-                    }
+
+					if (CGTValue.greater(returnValue, alpha)) {
+						alpha = returnValue;
+						bestLeftOption = move;
+					}
+					if (CGTValue.lessEqual(beta, alpha)) {
+						break;
+					}
 				}
 			} else {
-                returnValue = new Number(Double.MAX_VALUE);
-                for (Move move : availableMoves) {
+				returnValue = new Number(Double.MAX_VALUE);
+				for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, true, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-                    if (CGTValue.less(value, returnValue)) {
-                        returnValue = value;
-                    }
-
-                    if (CGTValue.less(returnValue, beta)) {
-                        beta = returnValue;
-                        bestRightOption = move;
+					if (CGTValue.less(value, returnValue)) {
+						returnValue = value;
 					}
-                    if (CGTValue.lessEqual(beta, alpha)) {
-                        break;
-                    }
+
+					if (CGTValue.less(returnValue, beta)) {
+						beta = returnValue;
+						bestRightOption = move;
+					}
+					if (CGTValue.lessEqual(beta, alpha)) {
+						break;
+					}
 				}
 			}
 		}
@@ -166,183 +166,183 @@ public class ABCGTSolver {
 		return returnValue;
 	}
 
-    public OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
-    	if(blackOutcome instanceof Number) {
-    		Number black = (Number)blackOutcome;
-    		
-    		if(whiteOutcome instanceof Number) {
-    			Number white = (Number)whiteOutcome;
-    			
-    			if(black.getValue() >= 0 && white.getValue() > 0) {
-    				return OutcomeType.BLACK;
-    			}
-    			
-    			if(black.getValue() > 0 && white.getValue() < 0) {
-    				return OutcomeType.FIRST;
-    			}
-    			
-    			if(black.getValue() < 0 && white.getValue() <= 0) {
-    				return OutcomeType.WHITE;
-    			}
-    			
-    			if(black.getValue() < 0 && white.getValue() > 0) {
-    				return OutcomeType.SECOND;
-    			}
-    			
-    			if(black.getValue() == 0 && white.getValue() == 0) {
-    				return OutcomeType.FIRST;
-    			}
-    		} else if(whiteOutcome instanceof Nimber) {
-//    			Nimber white = (Nimber)whiteOutcome;
-    			
-    			if(black.getValue() > 0) {
-    				return OutcomeType.BLACK;
-    			}
-    			
-    			if(black.getValue() < 0) {
-    				return OutcomeType.SECOND;
-    			}
-    			
-    			if(black.getValue() == 0) {
-    				return OutcomeType.BLACK;
-    			}
-    			
-    		} else if(whiteOutcome instanceof Switch) {
-    			Switch white = (Switch)whiteOutcome;
-    			
-    			if(black.getValue() >= 0) {
-    				if(white.isNegative()) {
-    					return OutcomeType.FIRST;
-    				} else if(white.isPositive()) {
-    					return OutcomeType.BLACK;
-    				} else if(white.isNimber()) {
-    					return OutcomeType.BLACK;
-    				}
-    			} else {
-    				if(white.isNegative()) {
-    					return OutcomeType.WHITE;
-    				} else if(white.isPositive()) {
-    					return OutcomeType.SECOND;
-    				} else if(white.isNimber()) {
-    					return OutcomeType.SECOND;
-    				}
-    			}
-    			
-    		} else if(whiteOutcome instanceof Infinitesimal) {
-    			Infinitesimal white = (Infinitesimal)whiteOutcome;
-    			
-    			if(black.getValue() > 0) {
-    				if(white.getValue() > 0) {
-    					return OutcomeType.BLACK;
-    				} else {
-    					return OutcomeType.FIRST;
-    				}
-    			}
-    			
-    			if(black.getValue() < 0) {
-    				if(white.getValue() > 0) {
-    					return OutcomeType.SECOND;
-    				} else {
-    					return OutcomeType.WHITE;
-    				}
-    			}
-    			
-    			if(black.getValue() == 0) {
-    				if(white.getValue() > 0) {
-    					return OutcomeType.BLACK;
-    				} else {
-    					return OutcomeType.FIRST;
-    				}
-    			}
-    		}
-    	} else if(blackOutcome instanceof Nimber) {
-    		Nimber black = (Nimber)blackOutcome;
-    		
-    		if(whiteOutcome instanceof Number) {
-        		Number white = (Number)whiteOutcome;
-        		
-        		if(white.getValue() > 0) {
-    				return OutcomeType.SECOND;
-    			}
-    			
-    			if(white.getValue() < 0) {
-    				return OutcomeType.WHITE;
-    			}
-    			
-    			if(white.getValue() == 0) {
-    				return OutcomeType.WHITE;
-    			}
-        		
-    		} else if(whiteOutcome instanceof Nimber) {
-//    			Nimber white = (Nimber)whiteOutcome;
-    			
-    			return OutcomeType.SECOND;
-    		} else if(whiteOutcome instanceof Switch) {
-    			Switch white = (Switch)whiteOutcome;
-    			
-    			if(white.isNegative()) {
-    				return OutcomeType.WHITE;
-    			} else if(white.isPositive()) {
-    				return OutcomeType.SECOND;
-    			} else if(white.isNimber()) {
-    				return OutcomeType.SECOND;
-    			}
-    			
-    		} else if(whiteOutcome instanceof Infinitesimal) {
-    			Infinitesimal white = (Infinitesimal)whiteOutcome;
-    			
-    			if(white.getValue() > 0) {
-    				return OutcomeType.SECOND;
-    			} else {
-    				return OutcomeType.WHITE;
-    			}
-    		}
-    	} else if(blackOutcome instanceof Switch) {
-    		Switch black = (Switch)blackOutcome;
-    		
-    		if(whiteOutcome instanceof Number) {
-        		Number white = (Number)whiteOutcome;
-        		
-    			if(white.getValue() > 0) {
-    				if(black.isNegative()) {
-    					return OutcomeType.SECOND;
-    				} else if(black.isPositive()) {
-    					return OutcomeType.BLACK;
-    				} else if(black.isNimber()) {
-    					return OutcomeType.SECOND;
-    				}
-    			} else {
-    				if(black.isNegative()) {
-    					return OutcomeType.WHITE;
-    				} else if(black.isPositive()) {
-    					return OutcomeType.FIRST;
-    				} else if(black.isNimber()) {
-    					return OutcomeType.WHITE;
-    				}
-    			}
-        		
-    		} else if(whiteOutcome instanceof Nimber) {
-    			Nimber white = (Nimber)whiteOutcome;
-    		} else if(whiteOutcome instanceof Switch) {
-    			Switch white = (Switch)whiteOutcome;
-    		} else if(whiteOutcome instanceof Infinitesimal) {
-    			Infinitesimal white = (Infinitesimal)whiteOutcome;
-    		}
-    	} else if(blackOutcome instanceof Infinitesimal) {
-    		Infinitesimal black = (Infinitesimal)blackOutcome;
-    		
-    		if(whiteOutcome instanceof Number) {
-        		Number white = (Number)whiteOutcome;
-    		} else if(whiteOutcome instanceof Nimber) {
-    			Nimber white = (Nimber)whiteOutcome;
-    		} else if(whiteOutcome instanceof Switch) {
-    			Switch white = (Switch)whiteOutcome;
-    		} else if(whiteOutcome instanceof Infinitesimal) {
-    			Infinitesimal white = (Infinitesimal)whiteOutcome;
-    		}
-    	}
-    	
-    	throw new IllegalArgumentException("Cannot determine winner.");
+	public OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
+		if (blackOutcome instanceof Number) {
+			Number black = (Number) blackOutcome;
+
+			if (whiteOutcome instanceof Number) {
+				Number white = (Number) whiteOutcome;
+
+				if (black.getValue() >= 0 && white.getValue() > 0) {
+					return OutcomeType.BLACK;
+				}
+
+				if (black.getValue() > 0 && white.getValue() < 0) {
+					return OutcomeType.FIRST;
+				}
+
+				if (black.getValue() < 0 && white.getValue() <= 0) {
+					return OutcomeType.WHITE;
+				}
+
+				if (black.getValue() < 0 && white.getValue() > 0) {
+					return OutcomeType.SECOND;
+				}
+
+				if (black.getValue() == 0 && white.getValue() == 0) {
+					return OutcomeType.FIRST;
+				}
+			} else if (whiteOutcome instanceof Nimber) {
+				// Nimber white = (Nimber)whiteOutcome;
+
+				if (black.getValue() > 0) {
+					return OutcomeType.BLACK;
+				}
+
+				if (black.getValue() < 0) {
+					return OutcomeType.SECOND;
+				}
+
+				if (black.getValue() == 0) {
+					return OutcomeType.BLACK;
+				}
+
+			} else if (whiteOutcome instanceof Switch) {
+				Switch white = (Switch) whiteOutcome;
+
+				if (black.getValue() >= 0) {
+					if (white.isNegative()) {
+						return OutcomeType.FIRST;
+					} else if (white.isPositive()) {
+						return OutcomeType.BLACK;
+					} else if (white.isNimber()) {
+						return OutcomeType.BLACK;
+					}
+				} else {
+					if (white.isNegative()) {
+						return OutcomeType.WHITE;
+					} else if (white.isPositive()) {
+						return OutcomeType.SECOND;
+					} else if (white.isNimber()) {
+						return OutcomeType.SECOND;
+					}
+				}
+
+			} else if (whiteOutcome instanceof Infinitesimal) {
+				Infinitesimal white = (Infinitesimal) whiteOutcome;
+
+				if (black.getValue() > 0) {
+					if (white.getValue() > 0) {
+						return OutcomeType.BLACK;
+					} else {
+						return OutcomeType.FIRST;
+					}
+				}
+
+				if (black.getValue() < 0) {
+					if (white.getValue() > 0) {
+						return OutcomeType.SECOND;
+					} else {
+						return OutcomeType.WHITE;
+					}
+				}
+
+				if (black.getValue() == 0) {
+					if (white.getValue() > 0) {
+						return OutcomeType.BLACK;
+					} else {
+						return OutcomeType.FIRST;
+					}
+				}
+			}
+		} else if (blackOutcome instanceof Nimber) {
+			Nimber black = (Nimber) blackOutcome;
+
+			if (whiteOutcome instanceof Number) {
+				Number white = (Number) whiteOutcome;
+
+				if (white.getValue() > 0) {
+					return OutcomeType.SECOND;
+				}
+
+				if (white.getValue() < 0) {
+					return OutcomeType.WHITE;
+				}
+
+				if (white.getValue() == 0) {
+					return OutcomeType.WHITE;
+				}
+
+			} else if (whiteOutcome instanceof Nimber) {
+				// Nimber white = (Nimber)whiteOutcome;
+
+				return OutcomeType.SECOND;
+			} else if (whiteOutcome instanceof Switch) {
+				Switch white = (Switch) whiteOutcome;
+
+				if (white.isNegative()) {
+					return OutcomeType.WHITE;
+				} else if (white.isPositive()) {
+					return OutcomeType.SECOND;
+				} else if (white.isNimber()) {
+					return OutcomeType.SECOND;
+				}
+
+			} else if (whiteOutcome instanceof Infinitesimal) {
+				Infinitesimal white = (Infinitesimal) whiteOutcome;
+
+				if (white.getValue() > 0) {
+					return OutcomeType.SECOND;
+				} else {
+					return OutcomeType.WHITE;
+				}
+			}
+		} else if (blackOutcome instanceof Switch) {
+			Switch black = (Switch) blackOutcome;
+
+			if (whiteOutcome instanceof Number) {
+				Number white = (Number) whiteOutcome;
+
+				if (white.getValue() > 0) {
+					if (black.isNegative()) {
+						return OutcomeType.SECOND;
+					} else if (black.isPositive()) {
+						return OutcomeType.BLACK;
+					} else if (black.isNimber()) {
+						return OutcomeType.SECOND;
+					}
+				} else {
+					if (black.isNegative()) {
+						return OutcomeType.WHITE;
+					} else if (black.isPositive()) {
+						return OutcomeType.FIRST;
+					} else if (black.isNimber()) {
+						return OutcomeType.WHITE;
+					}
+				}
+
+			} else if (whiteOutcome instanceof Nimber) {
+				Nimber white = (Nimber) whiteOutcome;
+			} else if (whiteOutcome instanceof Switch) {
+				Switch white = (Switch) whiteOutcome;
+			} else if (whiteOutcome instanceof Infinitesimal) {
+				Infinitesimal white = (Infinitesimal) whiteOutcome;
+			}
+		} else if (blackOutcome instanceof Infinitesimal) {
+			Infinitesimal black = (Infinitesimal) blackOutcome;
+
+			if (whiteOutcome instanceof Number) {
+				Number white = (Number) whiteOutcome;
+			} else if (whiteOutcome instanceof Nimber) {
+				Nimber white = (Nimber) whiteOutcome;
+			} else if (whiteOutcome instanceof Switch) {
+				Switch white = (Switch) whiteOutcome;
+			} else if (whiteOutcome instanceof Infinitesimal) {
+				Infinitesimal white = (Infinitesimal) whiteOutcome;
+			}
+		}
+
+		throw new IllegalArgumentException("Cannot determine winner.");
 	}
 
 	/**
