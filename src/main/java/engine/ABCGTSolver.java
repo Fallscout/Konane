@@ -166,8 +166,8 @@ public class ABCGTSolver {
 		return returnValue;
 	}
 
-    public OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
-    	if(blackOutcome instanceof Number) {
+	public static OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
+		if(blackOutcome instanceof Number) {
     		if(whiteOutcome instanceof Number) {
     			//Black win
     			
