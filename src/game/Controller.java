@@ -5,7 +5,7 @@ import engine.*;
 public class Controller {
 
 	public static void main(String[] args) {
-		Board board = new Board(3, 3, false);
+        Board board = new Board(6, 7, true);
 
 //		Board board = new Board(new Piece[][] {
 //			{null, null, new Piece(0, 2, true), new Piece(0, 3, false)},

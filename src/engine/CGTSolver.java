@@ -167,4 +167,12 @@ public class CGTSolver {
     private int getIndexOfHash(long zobristHash) {
         return (int) Math.abs(zobristHash & 0xFFFFFF);
     }
+
+    public int getCounterPostTT() {
+        return counterPostTT;
+    }
+
+    public int getCounterPreTT() {
+        return counterPreTT;
+    }
 }

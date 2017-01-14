@@ -10,6 +10,7 @@ import java.util.Collections;
 public class ABCGTSolver {
 
 	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
+    private final CGTSolver cgtSolver = new CGTSolver();
 
 	private int counter = 0;
 	private int counterTT = 0;
@@ -18,10 +19,9 @@ public class ABCGTSolver {
 		CGTValue blackOutcome = null;
 		CGTValue whiteOutcome = null;
 
-		CGTValue value = null;
+        CGTValue value;
 
 		List<Move> blackMoves = board.getLeftOptions();
-		orderMoves(blackMoves, board, true);
 		for (Move move : blackMoves) {
 			board.executeMove(move);
 			value = solve(board, false, new Number(-100), new Number(100), 1);
@@ -30,7 +30,6 @@ public class ABCGTSolver {
 		}
 		
 		List<Move> whiteMoves = board.getRightOptions();
-		orderMoves(whiteMoves, board, false);
 		for (Move move : whiteMoves) {
 			board.executeMove(move);
 			value = solve(board, true, new Number(-100), new Number(100), 1);
@@ -41,10 +40,11 @@ public class ABCGTSolver {
 		System.out.println("AB-CGT solver:");
 		System.out.println("Nodes looked up in TT: " + counterTT);
 		System.out.println("Node counter: " + counter);
+        System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
+        System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
 
-		CGTValue outcome = CGTValue.getOutcome(blackOutcome, whiteOutcome);
-		return this.determineWinner(outcome);
-	}
+        return this.determineWinner(blackOutcome, whiteOutcome);
+    }
 
 	private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
 		int[] possibleOpponentsMoves = new int[moves.size()];
@@ -99,54 +99,63 @@ public class ABCGTSolver {
 			availableMoves = board.getRightOptions();
 		}
 
-		if (availableMoves.isEmpty()) {
-			if (blackTurn) {
-				returnValue = new Number(-1); // White wins
-			} else {
-				returnValue = new Number(1); // Black wins
-			}
-		}
+        if (availableMoves.isEmpty()) {
+            if (blackTurn) {
+                returnValue = new Number(-1); // White wins
+            } else {
+                returnValue = new Number(1); // Black wins
+            }
+        } else {
+            orderMoves(availableMoves, board, blackTurn);
+        }
 
 		if (returnValue == null) {
 			if (board.isEndgame()) {
 				// Do CGT Stuff
-				CGTValue cgtvalue = new CGTSolver().calculate(board);
-				if (cgtvalue != null) {
-					returnValue = cgtvalue;
-				}
-			}
+                returnValue = cgtSolver.calculate(board);
+            }
 		}
 
 		CGTValue value;
 
 		if (returnValue == null) {
 			if (blackTurn) {
-				for (Move move : availableMoves) {
+                returnValue = new Number(-Double.MAX_VALUE);
+                for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, false, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-					if (CGTValue.greaterEqual(value, beta)) {
-						returnValue = beta;
-						bestLeftOption = move;
+                    if (CGTValue.greater(value, returnValue)) {
+                        returnValue = value;
+                    }
+
+                    if (CGTValue.greater(returnValue, alpha)) {
+                        alpha = returnValue;
+                        bestLeftOption = move;
 					}
-					if (CGTValue.greater(value, alpha)) {
-						alpha = value;
-					}
+                    if (CGTValue.lessEqual(beta, alpha)) {
+                        break;
+                    }
 				}
 			} else {
-				for (Move move : availableMoves) {
+                returnValue = new Number(Double.MAX_VALUE);
+                for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, true, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-					if (CGTValue.lessEqual(value, alpha)) {
-						returnValue = alpha;
-						bestRightOption = move;
+                    if (CGTValue.less(value, returnValue)) {
+                        returnValue = value;
+                    }
+
+                    if (CGTValue.less(returnValue, beta)) {
+                        beta = returnValue;
+                        bestRightOption = move;
 					}
-					if (CGTValue.less(value, beta)) {
-						beta = value;
-					}
+                    if (CGTValue.lessEqual(beta, alpha)) {
+                        break;
+                    }
 				}
 			}
 		}
@@ -156,18 +165,18 @@ public class ABCGTSolver {
 		return returnValue;
 	}
 
-	private OutcomeType determineWinner(CGTValue outcome) {
-		if (outcome instanceof Number) {
-			double value = ((Number) outcome).getValue();
-			if (value < 0) {
-				return OutcomeType.WHITE;
-			} else if (value == 0) {
-				return OutcomeType.SECOND;
-			} else {
-				return OutcomeType.BLACK;
-			}
-		}
-		return OutcomeType.FIRST;
+    private OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
+        //		if (outcome instanceof Number) {
+        //			double value = ((Number) outcome).getValue();
+        //			if (value < 0) {
+        //				return OutcomeType.WHITE;
+        //			} else if (value == 0) {
+        //				return OutcomeType.SECOND;
+        //			} else {
+        //				return OutcomeType.BLACK;
+        //			}
+        //		}
+        return OutcomeType.FIRST;
 	}
 
 	/**
