@@ -27,6 +27,18 @@ public class Switch extends CGTValue {
     public String toString() {
         return "Switch{" + "left=" + left + ", right=" + right + '}';
     }
+    
+    public boolean isNegative() {
+    	return this.left.getValue() < 0 && this.right.getValue() < 0;
+    }
+    
+    public boolean isPositive() {
+    	return this.left.getValue() > 0 && this.right.getValue() > 0;
+    }
+    
+    public boolean isNimber() {
+    	return this.left.getValue() > 0 && this.right.getValue() < 0;
+    }
 
     @Override public boolean equals(Object o) {
         if (this == o)
