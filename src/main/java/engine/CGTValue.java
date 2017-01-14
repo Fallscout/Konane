@@ -1,5 +1,7 @@
 package engine;
 
+import java.lang.*;
+
 public abstract class CGTValue {
 
     public abstract String toString();

@@ -1,10 +1,10 @@
 package engine;
 
+import java.lang.*;
 import java.util.List;
 
 import game.Board;
 import game.Move;
-import game.Piece;
 
 public class CGTSolver {
 

@@ -1,5 +1,6 @@
 package engine;
 
+import java.lang.*;
 import java.security.InvalidParameterException;
 
 public class Switch extends CGTValue {
