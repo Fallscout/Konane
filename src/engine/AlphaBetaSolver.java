@@ -15,8 +15,6 @@ public class AlphaBetaSolver {
 		int blackOutcome = 0;
 		int whiteOutcome = 0;
 
-
-
 		List<Move> blackMoves = board.getLeftOptions();
 		
 		for(Move move : blackMoves) {

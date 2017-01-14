@@ -18,26 +18,24 @@ public class ABCGTSolver {
 		CGTValue blackOutcome = null;
 		CGTValue whiteOutcome = null;
 
+		CGTValue value = null;
+
 		List<Move> blackMoves = board.getLeftOptions();
 		orderMoves(blackMoves, board, true);
 		for (Move move : blackMoves) {
 			board.executeMove(move);
-			blackOutcome = solve(board, false, new Number(-100), new Number(100), 1);
+			value = solve(board, false, new Number(-100), new Number(100), 1);
 			board.revertMove(move);
-			// if (blackOutcome.greater(ZERO)) {
-			// break;
-			// }
+			blackOutcome = CGTValue.max(value, blackOutcome, true);
 		}
-
+		
 		List<Move> whiteMoves = board.getRightOptions();
 		orderMoves(whiteMoves, board, false);
 		for (Move move : whiteMoves) {
 			board.executeMove(move);
-			whiteOutcome = solve(board, true, new Number(-100), new Number(100), 1);
+			value = solve(board, true, new Number(-100), new Number(100), 1);
 			board.revertMove(move);
-			// if (whiteOutcome.less(ZERO)) {
-			// break;
-			// }
+			whiteOutcome = CGTValue.max(value, whiteOutcome, false);
 		}
 
 		System.out.println("AB-CGT solver:");
