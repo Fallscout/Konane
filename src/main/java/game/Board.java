@@ -189,10 +189,6 @@ public class Board {
         move.getCapturedPieces().clear();
     }
 
-    public Board simplify() {
-        return new Board(this);
-    }
-
     public Board negate() {
         Board board = new Board(this);
 
@@ -235,10 +231,6 @@ public class Board {
         return moves;
     }
 
-    public boolean isOnBoard(Move move) {
-        return move.getTargetRow() >= 0 && move.getTargetRow() < this.rows && move.getTargetCol() >= 0 && move.getTargetCol() < this.cols;
-    }
-
     public String getBoardRepresentation() {
         String ret = "";
 
@@ -269,18 +261,6 @@ public class Board {
         return cols;
     }
 
-    public Piece[][] getGameState() {
-        return gameState;
-    }
-
-    public List<Piece> getBlackPieces() {
-        return blackPieces;
-    }
-
-    public List<Piece> getWhitePieces() {
-        return whitePieces;
-    }
-
     private List<Move> getValidMoves(Piece piece) {
         List<Move> moves = new ArrayList<>();
 
@@ -289,66 +269,22 @@ public class Board {
 
         if (row - 2 >= 0 && this.gameState[row - 1][col] != null && this.gameState[row - 1][col].isBlack() != piece.isBlack()
             && this.gameState[row - 2][col] == null) {
-
-            // Single jump possible, but maybe there is also a double jump
-            // possible
-
-            if (row - 4 >= 0 && this.gameState[row - 3][col] != null && this.gameState[row - 3][col].isBlack() != piece.isBlack()
-                && this.gameState[row - 4][col] == null) {
-                // Double jump possible
-                moves.add(new Move(row, col, row - 4, col));
-            } else {
-                // Double jump not possible, so do the single jump
-                moves.add(new Move(row, col, row - 2, col));
-            }
+            moves.add(new Move(row, col, row - 2, col));
         }
 
         if (row + 2 < this.rows && this.gameState[row + 1][col] != null && this.gameState[row + 1][col].isBlack() != piece.isBlack()
             && this.gameState[row + 2][col] == null) {
-
-            // Single jump possible, but maybe there is also a double jump
-            // possible
-
-            if (row + 4 < this.rows && this.gameState[row + 3][col] != null && this.gameState[row + 3][col].isBlack() != piece.isBlack()
-                && this.gameState[row + 4][col] == null) {
-                // Double jump possible
-                moves.add(new Move(row, col, row + 4, col));
-            } else {
-                // Double jump not possible, so do the single jump
-                moves.add(new Move(row, col, row + 2, col));
-            }
+            moves.add(new Move(row, col, row + 2, col));
         }
 
         if (col - 2 >= 0 && this.gameState[row][col - 1] != null && this.gameState[row][col - 1].isBlack() != piece.isBlack()
             && this.gameState[row][col - 2] == null) {
-
-            // Single jump possible, but maybe there is also a double jump
-            // possible
-
-            if (col - 4 >= 0 && this.gameState[row][col - 3] != null && this.gameState[row][col - 3].isBlack() != piece.isBlack()
-                && this.gameState[row][col - 4] == null) {
-                // Double jump possible
-                moves.add(new Move(row, col, row, col - 4));
-            } else {
-                // Double jump not possible, so do the single jump
-                moves.add(new Move(row, col, row, col - 2));
-            }
+            moves.add(new Move(row, col, row, col - 2));
         }
 
         if (col + 2 < this.cols && this.gameState[row][col + 1] != null && this.gameState[row][col + 1].isBlack() != piece.isBlack()
             && this.gameState[row][col + 2] == null) {
-
-            // Single jump possible, but maybe there is also a double jump
-            // possible
-
-            if (col + 4 < this.cols && this.gameState[row][col + 3] != null && this.gameState[row][col + 3].isBlack() != piece.isBlack()
-                && this.gameState[row][col + 4] == null) {
-                // Double jump possible
-                moves.add(new Move(row, col, row, col + 4));
-            } else {
-                // Double jump not possible, so do the single jump
-                moves.add(new Move(row, col, row, col + 2));
-            }
+            moves.add(new Move(row, col, row, col + 2));
         }
 
         return moves;
@@ -357,7 +293,6 @@ public class Board {
     public boolean isEndgame() {
         int pieces = this.blackPieces.size() + this.whitePieces.size();
         int endgameBoardsize = (int) ((this.cols * this.rows - 2) * 0.3);
-        //        System.out.println("isEndgame:" + pieces + ";" + endgameBoardsize);
         return pieces < Math.max(8, endgameBoardsize);
     }
 
