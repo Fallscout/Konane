@@ -23,8 +23,8 @@ public class ABCGTSolver {
 	private int counterTT = 0;
 
 	public OutcomeType solve(Board board) throws InterruptedException, ExecutionException {
-		CGTValue blackOutcome = null;
-		CGTValue whiteOutcome = null;
+		CGTValue blackOutcome = new Number(-1);
+		CGTValue whiteOutcome = new Number(1);
 
 		List<Callable<CGTValue>> blackMoveTasks = new ArrayList<>();
 		List<Callable<CGTValue>> whiteMoveTasks = new ArrayList<>();
