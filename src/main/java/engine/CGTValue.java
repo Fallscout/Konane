@@ -1,7 +1,5 @@
 package engine;
 
-import java.lang.*;
-
 public abstract class CGTValue {
 
     public abstract String toString();
@@ -165,7 +163,12 @@ public abstract class CGTValue {
                 }
             } else if (rightValue instanceof Nimber) {
                 Nimber right = (Nimber) rightValue;
-                return new Nimber(left.getValue() ^ right.getValue());
+                int result = left.getValue() ^ right.getValue();
+                if(result == 0) {
+                	return new Number(0);
+                } else {
+                	return new Nimber(result);
+                }
             }
 
         } else if (leftValue instanceof Switch) {
