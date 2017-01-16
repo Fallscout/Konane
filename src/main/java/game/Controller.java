@@ -1,30 +1,44 @@
 package game;
 
 import engine.AlphaBetaSolver;
-import engine.CABSolver;
+import engine.CABSolverSerial;
 import engine.OutcomeType;
 import engine.Solver;
 
 public class Controller {
 
-	public static void main(String[] args) {
-		Board board = new Board(6, 6, false);
+    public static void main(String[] args) {
+        int maxSize = 35;
 
-		// Board board = new Board(new Piece[][] {
-		// {null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
-		// {new Piece(1, 0, false), null, null, null},
-		// {new Piece(2, 0, true), null, null, new Piece(2, 3, false)},
-		// {null, null, null, null}
-		// });
+        Solver[] solvers = new Solver[2];
+        solvers[0] = new AlphaBetaSolver();
+        solvers[1] = new CABSolverSerial();
 
-		System.out.println(board.getBoardRepresentation());
+        for (int i = 3; i < maxSize / 3; i++) {
+            for (int j = 3; j < maxSize / 3; j++) {
 
-		// CGTSolver solver = new CGTSolver();
-		// AlphaBetaSolver solver = new AlphaBetaSolver();
-		Solver solver = new AlphaBetaSolver();
+                if (i * j > maxSize) {
+                    continue;
+                }
 
-		OutcomeType result = solver.solveWithTime(board);
-		System.out.println(result);
+                System.out.println("---------------Testing " + i + "x" + j + "---------------");
+                OutcomeType outcomeType = null;
+                for (Solver solver : solvers) {
+                    Board board = new Board(i, j, false);
+                    OutcomeType currentSolverOutcome = solver.solveWithTime(board);
+                    if (outcomeType == null) {
+                        outcomeType = currentSolverOutcome;
+                    } else {
+                        if (outcomeType != currentSolverOutcome) {
+                            System.err.println("!!!NOT THE SAME OUTCOMETYPE FOR " + i + "x" + j + " BOARD!!!");
+                            System.err.println("Former outcome: " + outcomeType);
+                            System.err.println("Current outcome: " + currentSolverOutcome);
+                        }
+                    }
+                    System.out.println();
+                }
+            }
+        }
 
-	}
+    }
 }
