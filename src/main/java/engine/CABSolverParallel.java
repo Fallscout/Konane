@@ -1,19 +1,14 @@
 package engine;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import game.Board;
 import game.Move;
 
-public class CABSolver extends Solver{
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
+
+public class CABSolverParallel extends Solver{
 
 	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 	private final CGTSolver cgtSolver = new CGTSolver();
