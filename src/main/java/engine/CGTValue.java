@@ -18,7 +18,7 @@ public abstract class CGTValue {
 				// Berlekamp et al., p. 44
 				Number right = (Number) rightValue;
 				return new Number(right.getValue() - 1);
-			} 
+			}
 			else if (rightValue instanceof Nimber) {
 				return new Number(0);
 //			} else if (rightValue instanceof Switch) {
@@ -279,17 +279,9 @@ public abstract class CGTValue {
 
 				// TODO: Ask Jos
 				if (blackTurn) {
-					if (first.getValue() >= 0) {
-						return first;
-					} else {
-						return second;
-					}
+                    return first;
 				} else {
-					if (first.getValue() <= 0) {
-						return first;
-					} else {
-						return second;
-					}
+				    return first;
 				}
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal) secondValue;
@@ -372,26 +364,18 @@ public abstract class CGTValue {
 			}
 		} else if (firstValue instanceof Switch) {
 			Switch first = (Switch)firstValue;
-			
+
 			if (secondValue instanceof Number) {
 				Number second = (Number)secondValue;
-				
+
 				if(blackTurn) {
-					if(second.getValue() >= 0) {
-						return second;
-					} else {
-						return first;
-					}
+					return second;
 				} else {
-					if(second.getValue() <= 0) {
-						return second;
-					} else {
-						return first;
-					}
+                    return second;
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.isPositive()) {
 						return first;
@@ -440,10 +424,10 @@ public abstract class CGTValue {
 			}
 		} else if (firstValue instanceof Infinitesimal) {
 			Infinitesimal first = (Infinitesimal)firstValue;
-			
+
 			if (secondValue instanceof Number) {
 				Number second = (Number)secondValue;
-				
+
 				if(blackTurn) {
 					if(second.getValue() >= 0) {
 						return second;
@@ -459,7 +443,7 @@ public abstract class CGTValue {
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.getValue() > 0) {
 						return first;
@@ -491,7 +475,7 @@ public abstract class CGTValue {
 				}
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.getValue() > second.getValue()) {
 						return first;
