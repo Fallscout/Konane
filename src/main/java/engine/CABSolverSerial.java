@@ -21,6 +21,7 @@ public class CABSolverSerial extends Solver {
         CGTValue value;
 
         List<Move> blackMoves = board.getLeftOptions();
+        orderMoves(blackMoves, board, true);
         for (Move move : blackMoves) {
             board.executeMove(move);
             value = solve(board, false, new Number(-100), new Number(100), 1);
@@ -35,6 +36,7 @@ public class CABSolverSerial extends Solver {
         }
 
         List<Move> whiteMoves = board.getRightOptions();
+        orderMoves(whiteMoves, board, false);
         for (Move move : whiteMoves) {
             board.executeMove(move);
             value = solve(board, true, new Number(-100), new Number(100), 1);

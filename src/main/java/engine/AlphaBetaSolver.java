@@ -22,7 +22,7 @@ public class AlphaBetaSolver extends Solver {
         int whiteOutcome = -1;
 
         List<Move> blackMoves = board.getLeftOptions();
-
+        orderMoves(blackMoves, board, true);
         for (Move move : blackMoves) {
             board.executeMove(move);
             blackOutcome = -solve(board, false, -1, 1, 1);
@@ -33,7 +33,7 @@ public class AlphaBetaSolver extends Solver {
         }
 
         List<Move> whiteMoves = board.getRightOptions();
-
+        orderMoves(whiteMoves, board, false);
         for (Move move : whiteMoves) {
             board.executeMove(move);
             whiteOutcome = -solve(board, true, -1, 1, 1);

@@ -4,7 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CGTValueTest {
+@SuppressWarnings("EqualsBetweenInconvertibleTypes") public class CGTValueTest {
 
 	/*
 	 * ------------------------------------------------- combine()

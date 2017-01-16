@@ -3,6 +3,7 @@ package game;
 import engine.ZobristHashCalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Board {
@@ -122,71 +123,36 @@ public class Board {
     public void executeMove(Move move) {
         Piece movingPiece = this.gameState[move.getSourceRow()][move.getSourceCol()];
 
-        this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
-
-        int deltaRow = move.getTargetRow() - move.getSourceRow();
-        int deltaCol = move.getTargetCol() - move.getSourceCol();
-
-        if (deltaCol > 0) { // move right
-            for (int col = move.getSourceCol() + 1; col < move.getTargetCol(); col++) {
-                Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-                if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-                    this.removePiece(capturedPiece);
-                    move.getCapturedPieces().add(capturedPiece);
-                }
-            }
-        } else if (deltaCol < 0) { // move left
-            for (int col = move.getSourceCol() - 1; col > move.getTargetCol(); col--) {
-                Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-                if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-                    this.removePiece(capturedPiece);
-                    move.getCapturedPieces().add(capturedPiece);
-                }
-            }
-        } else if (deltaRow > 0) { // move down
-            for (int row = move.getSourceRow() + 1; row < move.getTargetRow(); row++) {
-                Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-                if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-                    this.removePiece(capturedPiece);
-                    move.getCapturedPieces().add(capturedPiece);
-                }
-            }
-        } else if (deltaRow < 0) { // move up
-            for (int row = move.getSourceRow() - 1; row > move.getTargetRow(); row--) {
-                Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-                if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-                    this.removePiece(capturedPiece);
-                    move.getCapturedPieces().add(capturedPiece);
-                }
-            }
+        Piece capturedPiece = this.gameState[(move.getSourceRow() + move.getTargetRow()) / 2][(move.getSourceCol() + move.getTargetCol())
+            / 2];
+        if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
+            this.removePiece(capturedPiece);
+            move.setCapturedPiece(capturedPiece);
+        } else {
+            throw new IllegalStateException(
+                "This is an invalid move. From (" + move.getSourceRow() + "|" + move.getSourceCol() + ") to (" + move.getTargetRow() + "|"
+                    + move.getTargetCol() + ") on board:\n" + getBoardRepresentation());
         }
 
         movingPiece.setRow(move.getTargetRow());
         movingPiece.setCol(move.getTargetCol());
+        this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
         this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
         this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
     }
 
     public void revertMove(Move move) {
         Piece movingPiece = this.gameState[move.getTargetRow()][move.getTargetCol()];
+        Piece capturedPiece = move.getCapturedPiece();
 
-        this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
-
-        for (Piece piece : move.getCapturedPieces()) {
-            this.gameState[piece.getRow()][piece.getCol()] = piece;
-
-            if (piece.isBlack()) {
-                this.blackPieces.add(piece);
-            } else {
-                this.whitePieces.add(piece);
-            }
-        }
+        this.addPiece(capturedPiece);
 
         movingPiece.setRow(move.getSourceRow());
         movingPiece.setCol(move.getSourceCol());
         this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
+        this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
+
         this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
-        move.getCapturedPieces().clear();
     }
 
     public Board negate() {
@@ -305,11 +271,54 @@ public class Board {
         this.gameState[piece.getRow()][piece.getCol()] = null;
     }
 
+    private void addPiece(Piece piece) {
+        if (piece.isBlack()) {
+            this.blackPieces.add(piece);
+        } else {
+            this.whitePieces.add(piece);
+        }
+        this.gameState[piece.getRow()][piece.getCol()] = piece;
+    }
+
     public Piece getPieceAtPosition(int row, int col) {
         return gameState[row][col];
     }
 
     public long getZobristHash() {
         return zobristHash;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Board board = (Board) o;
+
+        if (rows != board.rows)
+            return false;
+        if (cols != board.cols)
+            return false;
+        if (zobristHash != board.zobristHash)
+            return false;
+        if (!Arrays.deepEquals(gameState, board.gameState))
+            return false;
+        if (blackPieces != null ? !blackPieces.containsAll(board.blackPieces) : board.blackPieces != null)
+            return false;
+        if (whitePieces != null ? !whitePieces.containsAll(board.whitePieces) : board.whitePieces != null)
+            return false;
+        return hashCalculator != null ? hashCalculator.equals(board.hashCalculator) : board.hashCalculator == null;
+    }
+
+    @Override public int hashCode() {
+        int result = rows;
+        result = 31 * result + cols;
+        result = 31 * result + Arrays.deepHashCode(gameState);
+        result = 31 * result + (blackPieces != null ? blackPieces.hashCode() : 0);
+        result = 31 * result + (whitePieces != null ? whitePieces.hashCode() : 0);
+        result = 31 * result + (hashCalculator != null ? hashCalculator.hashCode() : 0);
+        result = 31 * result + (int) (zobristHash ^ (zobristHash >>> 32));
+        return result;
     }
 }

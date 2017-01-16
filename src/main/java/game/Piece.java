@@ -40,4 +40,26 @@ public class Piece {
 	public void setCol(int col) {
 		this.col = col;
 	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Piece piece = (Piece) o;
+
+		if (isBlack != piece.isBlack)
+			return false;
+		if (row != piece.row)
+			return false;
+		return col == piece.col;
+	}
+
+	@Override public int hashCode() {
+		int result = (isBlack ? 1 : 0);
+		result = 31 * result + row;
+		result = 31 * result + col;
+		return result;
+	}
 }
