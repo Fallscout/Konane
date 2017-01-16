@@ -10,6 +10,13 @@ public abstract class Solver {
 
     public abstract OutcomeType solve(Board board);
 
+    public OutcomeType solveWithTime(Board board){
+        Long starttime = System.currentTimeMillis();
+        OutcomeType result = solve(board);
+        System.out.println("Time (ms): "+ (System.currentTimeMillis()-starttime));
+        return result;
+    }
+
     public int getCounter() {
         return counter;
     }
