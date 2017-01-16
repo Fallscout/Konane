@@ -8,7 +8,7 @@ import engine.Solver;
 public class Controller {
 
 	public static void main(String[] args) {
-		Board board = new Board(5, 6, false);
+		Board board = new Board(6, 6, false);
 
 		// Board board = new Board(new Piece[][] {
 		// {null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
@@ -21,9 +21,9 @@ public class Controller {
 
 		// CGTSolver solver = new CGTSolver();
 		// AlphaBetaSolver solver = new AlphaBetaSolver();
-		Solver solver = new CABSolver();
+		Solver solver = new AlphaBetaSolver();
 
-		OutcomeType result = solver.solve(board);
+		OutcomeType result = solver.solveWithTime(board);
 		System.out.println(result);
 
 	}
