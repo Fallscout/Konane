@@ -117,7 +117,7 @@ public class CGTSolver {
         }
 
         // Get the final outcome and store it in the transposition table
-        cgtValue = CGTValue.getOutcome(leftOutcome, rightOutcome);
+        cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
         tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, cgtValue);
 
         return cgtValue;

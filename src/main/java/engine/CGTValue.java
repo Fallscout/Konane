@@ -7,7 +7,7 @@ public abstract class CGTValue {
 	public abstract boolean equals(Object object);
 
 	// TODO: https://github.com/Fallscout/Konane/issues/2
-	public static CGTValue getOutcome(CGTValue leftValue, CGTValue rightValue) {
+	public static CGTValue combine(CGTValue leftValue, CGTValue rightValue) {
 		if (leftValue == null && rightValue == null) {
 			// Berlekamp et al., p. 39
 			return new Number(0);
@@ -19,9 +19,8 @@ public abstract class CGTValue {
 				Number right = (Number) rightValue;
 				return new Number(right.getValue() - 1);
 			} 
-//			else if (rightValue instanceof Nimber) {
-//				// Should not be possible
-//				throw new IllegalStateException("It should not be possible that left has no moves but right got star.");
+			else if (rightValue instanceof Nimber) {
+				return new Number(0);
 //			} else if (rightValue instanceof Switch) {
 //				// Should not be possible
 //				throw new IllegalStateException(
@@ -30,7 +29,7 @@ public abstract class CGTValue {
 //				// Should not be possible
 //				throw new IllegalStateException(
 //						"It should not be possible that left has no moves but right got infinitesimal.");
-//			}
+			}
 		}
 
 		if (leftValue != null && rightValue == null) {
@@ -39,9 +38,8 @@ public abstract class CGTValue {
 				Number left = (Number) leftValue;
 				return new Number(left.getValue() + 1);
 			}
-//			else if (leftValue instanceof Nimber) {
-//				// Should not be possible
-//				throw new IllegalStateException("It should not be possible that right has no moves but left got star.");
+			else if (leftValue instanceof Nimber) {
+				return new Number(0);
 //			} else if (leftValue instanceof Switch) {
 //				// Should not be possible
 //				throw new IllegalStateException(
@@ -50,7 +48,7 @@ public abstract class CGTValue {
 //				// Should not be possible
 //				throw new IllegalStateException(
 //						"It should not be possible that right has no moves but left got infinitesimal.");
-//			}
+			}
 		}
 
 		if (leftValue instanceof Number) {
@@ -82,22 +80,12 @@ public abstract class CGTValue {
 					return new Number(0);
 				}
 
-				if (left.getValue() > 0 && right.getValue() > 0) {
+				if (left.getValue() >= 0 && right.getValue() > 0) {
 					return new Number(left.getValue() + 1);
 				}
 
-				if (left.getValue() < 0 && right.getValue() < 0) {
+				if (left.getValue() < 0 && right.getValue() <= 0) {
 					return new Number(right.getValue() - 1);
-				}
-
-				// TODO: Discuss with Jos
-				if (left.getValue() < 0 && right.getValue() == 0) {
-					return new Number(left.getValue());
-				}
-
-				// TODO: Discuss with Jos
-				if (left.getValue() == 0 && right.getValue() > 0) {
-					return new Number(right.getValue());
 				}
 			} else if (rightValue instanceof Nimber) {
 				if (left.getValue() > 0) {

@@ -23,8 +23,8 @@ public class ABCGTSolver {
 	private int counterTT = 0;
 
 	public OutcomeType solve(Board board) throws InterruptedException, ExecutionException {
-		CGTValue blackOutcome = new Number(-1);
-		CGTValue whiteOutcome = new Number(1);
+		CGTValue blackOutcome = new Number(-100);
+		CGTValue whiteOutcome = new Number(100);
 
 		List<Callable<CGTValue>> blackMoveTasks = new ArrayList<>();
 		List<Callable<CGTValue>> whiteMoveTasks = new ArrayList<>();
@@ -50,12 +50,13 @@ public class ABCGTSolver {
 		}
 
 		List<Future<CGTValue>> blackOutcomes = executor.invokeAll(blackMoveTasks);
+		List<Future<CGTValue>> whiteOutcomes = executor.invokeAll(whiteMoveTasks);
+
 		for (Future<CGTValue> singleBlackOutcome : blackOutcomes) {
 			CGTValue cgtValue = singleBlackOutcome.get();
 			blackOutcome = CGTValue.max(cgtValue, blackOutcome, true);
 		}
 
-		List<Future<CGTValue>> whiteOutcomes = executor.invokeAll(whiteMoveTasks);
 		for (Future<CGTValue> singleWhiteOutcome : whiteOutcomes) {
 			CGTValue cgtValue = singleWhiteOutcome.get();
 			whiteOutcome = CGTValue.max(cgtValue, whiteOutcome, false);
