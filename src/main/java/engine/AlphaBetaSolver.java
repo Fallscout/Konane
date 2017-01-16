@@ -6,13 +6,19 @@ import java.util.List;
 import game.Board;
 import game.Move;
 
-public class AlphaBetaSolver {
+public class AlphaBetaSolver extends Solver{
 
     private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int) Math.pow(2, 24)];
     private int counter;
     private int cutoffs;
     private int cutoffsFirstMove;
 
+    @Override
+    public void printCounter() {
+
+    }
+
+    @Override
     public OutcomeType solve(Board board) {
         int blackOutcome = 0;
         int whiteOutcome = 0;
@@ -53,6 +59,7 @@ public class AlphaBetaSolver {
             return OutcomeType.SECOND;
         }
     }
+
 
     private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
         int[] possibleOpponentsMoves = new int[moves.size()];
