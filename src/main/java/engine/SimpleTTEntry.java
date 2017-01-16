@@ -2,15 +2,29 @@ package engine;
 
 public class SimpleTTEntry {
     private final long zobristHash;
-    private final int value;
+    private Integer leftValue;
+    private Integer rightValue;
 
-    public SimpleTTEntry(long zobristHash, int value) {
+    public SimpleTTEntry(long zobristHash, Integer leftValue, Integer rightValue) {
         this.zobristHash = zobristHash;
-        this.value = value;
+        this.leftValue = leftValue;
+        this.rightValue = rightValue;
     }
 
-    public int getValue() {
-        return value;
+    public Integer getLeftValue() {
+        return leftValue;
+    }
+
+    public void setLeftValue(Integer leftValue) {
+        this.leftValue = leftValue;
+    }
+
+    public Integer getRightValue() {
+        return rightValue;
+    }
+
+    public void setRightValue(Integer rightValue) {
+        this.rightValue = rightValue;
     }
 
     public long getZobristHash() {

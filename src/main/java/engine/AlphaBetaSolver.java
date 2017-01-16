@@ -6,22 +6,20 @@ import java.util.List;
 import game.Board;
 import game.Move;
 
-public class AlphaBetaSolver extends Solver{
+public class AlphaBetaSolver extends Solver {
 
     private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int) Math.pow(2, 24)];
     private int counter;
     private int cutoffs;
     private int cutoffsFirstMove;
 
-    @Override
-    public void printCounter() {
+    @Override public void printCounter() {
 
     }
 
-    @Override
-    public OutcomeType solve(Board board) {
-        int blackOutcome = 0;
-        int whiteOutcome = 0;
+    @Override public OutcomeType solve(Board board) {
+        int blackOutcome = -1;
+        int whiteOutcome = -1;
 
         List<Move> blackMoves = board.getLeftOptions();
 
@@ -60,7 +58,6 @@ public class AlphaBetaSolver extends Solver{
         }
     }
 
-
     private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
         int[] possibleOpponentsMoves = new int[moves.size()];
         for (int i = 0; i < moves.size(); i++) {
@@ -97,7 +94,13 @@ public class AlphaBetaSolver extends Solver{
         SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
         if (ttEntry != null) {
             if (ttEntry.getZobristHash() == boardHash) {
-                return ttEntry.getValue();
+                if (blackTurn && ttEntry.getLeftValue() != null) {
+                    return ttEntry.getLeftValue();
+                } else if (!blackTurn && ttEntry.getRightValue() != null) {
+                    return ttEntry.getRightValue();
+                }
+            } else {
+                ttEntry = null;
             }
         }
         counter++;
@@ -140,7 +143,19 @@ public class AlphaBetaSolver extends Solver{
             moveCounter++;
         }
 
-        tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, score);
+        if (ttEntry == null) {
+            if (blackTurn) {
+                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, score, null);
+            } else {
+                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, null, score);
+            }
+        } else {
+            if (blackTurn) {
+                ttEntry.setLeftValue(score);
+            } else {
+                ttEntry.setRightValue(score);
+            }
+        }
         return score;
     }
 
