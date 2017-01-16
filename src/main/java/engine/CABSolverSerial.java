@@ -21,7 +21,7 @@ public class CABSolverSerial extends Solver {
         CGTValue value;
 
         List<Move> blackMoves = board.getLeftOptions();
-        orderMoves(blackMoves, board, true);
+        //        orderMoves(blackMoves, board, true);
         for (Move move : blackMoves) {
             board.executeMove(move);
             value = solve(board, false, new Number(-100), new Number(100), 1);
@@ -36,7 +36,7 @@ public class CABSolverSerial extends Solver {
         }
 
         List<Move> whiteMoves = board.getRightOptions();
-        orderMoves(whiteMoves, board, false);
+        //        orderMoves(whiteMoves, board, false);
         for (Move move : whiteMoves) {
             board.executeMove(move);
             value = solve(board, true, new Number(-100), new Number(100), 1);
@@ -97,19 +97,23 @@ public class CABSolverSerial extends Solver {
 
     private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
 
-        // Lookup in TT
-        long boardHash = board.getZobristHash();
-        TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-        if (ttEntry != null) {
-            if (ttEntry.getZobristHash() == boardHash) {
-                counterTT++;
-                return ttEntry.getCgtValue();
-            }
-        }
+        //        // Lookup in TT
+        //        long boardHash = board.getZobristHash();
+        //        TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+        //        if (ttEntry != null) {
+        //            if (ttEntry.getZobristHash() == boardHash) {
+        //                if (blackTurn && ttEntry.getLeftValue() != null) {
+        //                    return ttEntry.getLeftValue();
+        //                } else if (!blackTurn && ttEntry.getRightValue() != null) {
+        //                    return ttEntry.getRightValue();
+        //                }
+        //            } else {
+        //                ttEntry = null;
+        //            }
+        //        }
+
         counter++;
         CGTValue returnValue = null;
-        Move bestLeftOption = null;
-        Move bestRightOption = null;
 
         List<Move> availableMoves;
         if (blackTurn) {
@@ -151,7 +155,6 @@ public class CABSolverSerial extends Solver {
 
                     if (CGTValue.greater(returnValue, alpha)) {
                         alpha = returnValue;
-                        bestLeftOption = move;
                     }
                     if (CGTValue.lessEqual(beta, alpha)) {
                         break;
@@ -170,7 +173,6 @@ public class CABSolverSerial extends Solver {
 
                     if (CGTValue.less(returnValue, beta)) {
                         beta = returnValue;
-                        bestRightOption = move;
                     }
                     if (CGTValue.lessEqual(beta, alpha)) {
                         break;
@@ -179,7 +181,19 @@ public class CABSolverSerial extends Solver {
             }
         }
 
-        tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
+        //        if (ttEntry == null) {
+        //            if (blackTurn) {
+        //                tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+        //            } else {
+        //                tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+        //            }
+        //        } else {
+        //            if (blackTurn) {
+        //                ttEntry.setLeftValue(returnValue);
+        //            } else {
+        //                ttEntry.setRightValue(returnValue);
+        //            }
+        //        }
 
         return returnValue;
     }

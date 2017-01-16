@@ -276,17 +276,25 @@ public abstract class CGTValue {
 
 			} else if (secondValue instanceof Switch) {
 				Switch second = (Switch) secondValue;
-
-				// TODO: Ask Jos
 				if (blackTurn) {
-                    return first;
+					if (first.getValue() >= 0) {
+						return first;
+					} else if (second.isPositive()) {
+						return second;
+					} else {
+						return first;
+					}
 				} else {
-				    return first;
+					if (first.getValue() <= 0) {
+						return first;
+					} else if (second.isNegative()) {
+						return second;
+					} else {
+						return first;
+					}
 				}
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal) secondValue;
-
-				// TODO: Discuss
 				if (blackTurn) {
 					if (first.getValue() >= 0) {
 						return first;
@@ -369,9 +377,21 @@ public abstract class CGTValue {
 				Number second = (Number)secondValue;
 
 				if(blackTurn) {
-					return second;
+					if (second.getValue() >= 0) {
+						return second;
+					} else if (first.isPositive()) {
+						return first;
+					} else {
+						return second;
+					}
 				} else {
-                    return second;
+					if (second.getValue() <= 0) {
+						return second;
+					} else if (first.isNegative()) {
+						return first;
+					} else {
+						return second;
+					}
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;

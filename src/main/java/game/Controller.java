@@ -8,7 +8,7 @@ import engine.Solver;
 public class Controller {
 
     public static void main(String[] args) {
-        int maxSize = 35;
+        int maxSize = 30;
 
         Solver[] solvers = new Solver[2];
         solvers[0] = new AlphaBetaSolver();

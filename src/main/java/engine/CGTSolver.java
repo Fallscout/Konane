@@ -78,7 +78,7 @@ public class CGTSolver extends Solver {
         TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
         if (ttEntry != null) {
             if (ttEntry.getZobristHash() == boardHash) {
-                return ttEntry.getCgtValue();
+                return ttEntry.getLeftValue();
             }
         }
         counterPostTT++;
@@ -93,9 +93,6 @@ public class CGTSolver extends Solver {
 
         CGTValue cgtValue;
 
-        Move bestLeftOption = null;
-        Move bestRightOption = null;
-
         CGTValue leftOutcome = null;
         CGTValue rightOutcome = null;
 
@@ -107,7 +104,6 @@ public class CGTSolver extends Solver {
 
             CGTValue max = CGTValue.max(leftOutcome, value, true);
             if (max != leftOutcome) {
-                bestLeftOption = option;
                 leftOutcome = max;
             }
         }
@@ -120,14 +116,13 @@ public class CGTSolver extends Solver {
 
             CGTValue max = CGTValue.max(rightOutcome, value, false);
             if (max != rightOutcome) {
-                bestRightOption = option;
                 rightOutcome = max;
             }
         }
 
         // Get the final outcome and store it in the transposition table
         cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
-        tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, cgtValue);
+        tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
 
         return cgtValue;
     }

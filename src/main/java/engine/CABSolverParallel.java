@@ -115,14 +115,18 @@ public class CABSolverParallel extends Solver{
 		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
 		if (ttEntry != null) {
 			if (ttEntry.getZobristHash() == boardHash) {
-				counterTT++;
-				return ttEntry.getCgtValue();
+				if (blackTurn && ttEntry.getLeftValue() != null) {
+					return ttEntry.getLeftValue();
+				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+					return ttEntry.getRightValue();
+				}
+			} else {
+				ttEntry = null;
 			}
 		}
+
 		counter++;
 		CGTValue returnValue = null;
-		Move bestLeftOption = null;
-		Move bestRightOption = null;
 
 		List<Move> availableMoves;
 		if (blackTurn) {
@@ -164,7 +168,6 @@ public class CABSolverParallel extends Solver{
 
 					if (CGTValue.greater(returnValue, alpha)) {
 						alpha = returnValue;
-						bestLeftOption = move;
 					}
 					if (CGTValue.lessEqual(beta, alpha)) {
 						break;
@@ -183,7 +186,6 @@ public class CABSolverParallel extends Solver{
 
 					if (CGTValue.less(returnValue, beta)) {
 						beta = returnValue;
-						bestRightOption = move;
 					}
 					if (CGTValue.lessEqual(beta, alpha)) {
 						break;
@@ -192,7 +194,19 @@ public class CABSolverParallel extends Solver{
 			}
 		}
 
-		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
+		if (ttEntry == null) {
+			if (blackTurn) {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+			} else {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+			}
+		} else {
+			if (blackTurn) {
+				ttEntry.setLeftValue(returnValue);
+			} else {
+				ttEntry.setRightValue(returnValue);
+			}
+		}
 
 		return returnValue;
 	}
