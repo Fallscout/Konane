@@ -659,7 +659,7 @@ public class CGTValueTest {
 		greaterEqual = CGTValue.greaterEqual(new Number(5), new Number(4));
 		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
 
-		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
+		greaterEqual = CGTValue.greaterEqual(new Number(1), new Number(1));
 		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
 	}
 
