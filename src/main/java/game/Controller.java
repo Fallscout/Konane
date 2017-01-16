@@ -1,14 +1,14 @@
 package game;
 
-import java.util.concurrent.ExecutionException;
-
-import engine.ABCGTSolver;
+import engine.AlphaBetaSolver;
+import engine.CABSolver;
 import engine.OutcomeType;
+import engine.Solver;
 
 public class Controller {
 
 	public static void main(String[] args) {
-		Board board = new Board(5, 5, false);
+		Board board = new Board(5, 6, false);
 
 		// Board board = new Board(new Piece[][] {
 		// {null, null, new Piece(0, 2, true), new Piece(0, 3, false)},
@@ -21,15 +21,10 @@ public class Controller {
 
 		// CGTSolver solver = new CGTSolver();
 		// AlphaBetaSolver solver = new AlphaBetaSolver();
-		ABCGTSolver solver = new ABCGTSolver();
+		Solver solver = new CABSolver();
 
-		try {
-			OutcomeType result = solver.solve(board);
-			System.out.println(result);
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		} finally {
-			solver.shutdown();
-		}
+		OutcomeType result = solver.solve(board);
+		System.out.println(result);
+
 	}
 }

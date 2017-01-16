@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import game.Board;
 import game.Move;
 
-public class ABCGTSolver {
+public class CABSolver extends Solver{
 
 	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 	private final CGTSolver cgtSolver = new CGTSolver();
@@ -22,10 +22,12 @@ public class ABCGTSolver {
 	private int counter = 0;
 	private int counterTT = 0;
 
-	public OutcomeType solve(Board board) throws InterruptedException, ExecutionException {
+	public OutcomeType solve(Board board) {
+
+
 		CGTValue blackOutcome = new Number(-1);
 		CGTValue whiteOutcome = new Number(1);
-
+		try {
 		List<Callable<CGTValue>> blackMoveTasks = new ArrayList<>();
 		List<Callable<CGTValue>> whiteMoveTasks = new ArrayList<>();
 
@@ -67,7 +69,17 @@ public class ABCGTSolver {
 		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
 		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
 
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
+			this.shutdown();
+		}
 		return determineWinner(blackOutcome, whiteOutcome);
+	}
+
+	@Override
+	public void printCounter() {
+
 	}
 
 	private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {

@@ -6,17 +6,25 @@ import java.util.List;
 import game.Board;
 import game.Move;
 
-public class CGTSolver {
+public class CGTSolver extends Solver {
 
     private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
     private int counterPostTT = 0;
     private int counterPreTT = 0;
+
+
+    @Override
+    public void printCounter() {
+
+    }
+
     /**
      * Solves a given board and returns the {@link OutcomeType}
      *
      * @param board The board that shall be solved
      * @return The {@link OutcomeType} of the game (FIRST, SECOND, BLACK, WHITE)
      */
+    @Override
     public OutcomeType solve(Board board) {
 
         CGTValue result = this.calculate(board);
@@ -54,6 +62,7 @@ public class CGTSolver {
 
         return null;
     }
+
 
     /**
      * Returns the CGTValue of the given <code>board</code>.
