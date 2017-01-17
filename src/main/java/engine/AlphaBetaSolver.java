@@ -1,156 +1,159 @@
 package engine;
 
-import java.util.Collections;
 import java.util.List;
 
 import game.Board;
 import game.Move;
 
-public class AlphaBetaSolver extends Solver{
+public class AlphaBetaSolver extends Solver {
 
-    private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int) Math.pow(2, 24)];
-    private int counter;
-    private int cutoffs;
-    private int cutoffsFirstMove;
+	private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int)Math.pow(2, 24)];
 
-    @Override
-    public void printCounter() {
+	private int counter;
+	private int cutoff;
+	
+	@Override
+	public OutcomeType solve(Board board) {
+		this.counter = 0;
+		this.counterTT = 0;
 
-    }
+		int blackOutcome = -1;
+		int whiteOutcome = 1;
+		
+		int value;
 
-    @Override
-    public OutcomeType solve(Board board) {
-        int blackOutcome = 0;
-        int whiteOutcome = 0;
+		List<Move> blackMoves = board.getLeftOptions();
+		for (Move move : blackMoves) {
+			board.executeMove(move);
+			value = solve(board, false, -10, 10, 1);
+			board.revertMove(move);
+			
+			blackOutcome = Math.max(value, blackOutcome);
+			if (blackOutcome == 1) {
+				break;
+			}
+		}
 
-        List<Move> blackMoves = board.getLeftOptions();
+		List<Move> whiteMoves = board.getRightOptions();
+		for (Move move : whiteMoves) {
+			board.executeMove(move);
+			value = solve(board, true, -10, 10, 1);
+			board.revertMove(move);
+			
+			whiteOutcome = Math.min(value, whiteOutcome);
+			if (whiteOutcome == -1) {
+				break;
+			}
+		}
 
-        for (Move move : blackMoves) {
-            board.executeMove(move);
-            blackOutcome = -solve(board, false, -1, 1, 1);
-            board.revertMove(move);
-            if (blackOutcome == 1) {
-                break;
-            }
-        }
+		System.out.println("Alpha-Beta solver:");
+		System.out.println("Node counter: " + counter);
+		System.out.println("Cutoffs: " + cutoff);
+		System.out.println("Nodes looked up in TT: " + counterTT);
 
-        List<Move> whiteMoves = board.getRightOptions();
+		if (blackOutcome == 1 && whiteOutcome == -1) {
+			return OutcomeType.FIRST;
+		} else if (blackOutcome == -1 && whiteOutcome == -1) {
+			return OutcomeType.WHITE;
+		} else if (blackOutcome == 1 && whiteOutcome == 1) {
+			return OutcomeType.BLACK;
+		} else if (blackOutcome == -1 && whiteOutcome == 1) {
+			return OutcomeType.SECOND;
+		}
 
-        for (Move move : whiteMoves) {
-            board.executeMove(move);
-            whiteOutcome = -solve(board, true, -1, 1, 1);
-            board.revertMove(move);
-            if (whiteOutcome == 1) {
-                break;
-            }
-        }
-        System.out.println("Alpha-Beta solver:");
-        System.out.println("Counter - nodes visited: " + counter);
-        System.out.println("Cutoffs absolute: " + cutoffs);
-        System.out.println("Cutoffs first move (%): " + (cutoffsFirstMove / (cutoffs + 0.0)));
+		throw new IllegalStateException("Cannot determine winner.");
+	}
 
-        if (blackOutcome == 1 && whiteOutcome == 1) {
-            return OutcomeType.FIRST;
-        } else if (blackOutcome == -1 && whiteOutcome == 1) {
-            return OutcomeType.WHITE;
-        } else if (blackOutcome == 1 && whiteOutcome == -1) {
-            return OutcomeType.BLACK;
-        } else {
-            return OutcomeType.SECOND;
-        }
-    }
+	private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
+		// Lookup in TT
+//		long boardHash = board.getZobristHash();
+//		SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+//		if (ttEntry != null) {
+//			if (ttEntry.getZobristHash() == boardHash) {
+//				counterTT++;
+//				return ttEntry.getValue();
+//			}
+//		}
 
+		counter++;
+		int returnValue = 0;
 
-    private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
-        int[] possibleOpponentsMoves = new int[moves.size()];
-        for (int i = 0; i < moves.size(); i++) {
-            Move move = moves.get(i);
-            board.executeMove(move);
-            int opponentsMoves;
-            if (blacksMove) {
-                opponentsMoves = board.getRightOptions().size();
-            } else {
-                opponentsMoves = board.getLeftOptions().size();
-            }
-            board.revertMove(move);
-            possibleOpponentsMoves[i] = opponentsMoves;
-        }
+		List<Move> availableMoves;
+		if (blackTurn) {
+			availableMoves = board.getLeftOptions();
+		} else {
+			availableMoves = board.getRightOptions();
+		}
 
-        for (int i = 0; i < possibleOpponentsMoves.length; i++) {
-            for (int j = i + 1; j < possibleOpponentsMoves.length; j++) {
-                int opponentsMoves = possibleOpponentsMoves[i];
-                int opponentsMoves2 = possibleOpponentsMoves[j];
+		if (availableMoves.isEmpty()) {
+			if (blackTurn) {
+				returnValue = -1; // White wins
+			} else {
+				returnValue = 1; // Black wins
+			}
+		} else {
+//			orderMoves(availableMoves, board, blackTurn);
+		}
 
-                if (opponentsMoves > opponentsMoves2) {
-                    possibleOpponentsMoves[i] = opponentsMoves2;
-                    possibleOpponentsMoves[j] = opponentsMoves;
+		int value;
 
-                    Collections.swap(moves, i, j);
-                }
-            }
-        }
-    }
+		if (returnValue == 0) {
+			if (blackTurn) {
+				returnValue = Integer.MIN_VALUE;
+				for (Move move : availableMoves) {
+					board.executeMove(move);
+					value = solve(board, !blackTurn, alpha, beta, ply + 1);
+					board.revertMove(move);
 
-    private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
-        // Lookup in TT
-        long boardHash = board.getZobristHash();
-        SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-        if (ttEntry != null) {
-            if (ttEntry.getZobristHash() == boardHash) {
-                return ttEntry.getValue();
-            }
-        }
-        counter++;
+					if (value > returnValue) {
+						returnValue = value;
+					}
+					if (returnValue > alpha) {
+						alpha = returnValue;
+					}
+					if (beta <= alpha) {
+						cutoff++;
+						break;
+					}
+				}
+			} else {
+				returnValue = Integer.MAX_VALUE;
+				for (Move move : availableMoves) {
+					board.executeMove(move);
+					value = solve(board, !blackTurn, alpha, beta, ply + 1);
+					board.revertMove(move);
 
-        List<Move> availableMoves;
-        if (blackTurn) {
-            availableMoves = board.getLeftOptions();
-        } else {
-            availableMoves = board.getRightOptions();
-        }
+					if (value < returnValue) {
+						returnValue = value;
+					}
+					if (returnValue < beta) {
+						beta = returnValue;
+					}
+					if (beta <= alpha) {
+						cutoff++;
+						break;
+					}
+				}
+			}
+		}
 
-        if (availableMoves.isEmpty()) {
-            //			counter++;
-            return -1;
-        } else {
-            orderMoves(availableMoves, board, blackTurn);
-        }
+//		tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, returnValue);
+		return returnValue;
+	}
 
-        int score = Integer.MIN_VALUE;
-        int value;
-        int moveCounter = 0;
-        for (Move move : availableMoves) {
-            board.executeMove(move);
-            value = -solve(board, !blackTurn, -beta, -alpha, ply + 1);
-            board.revertMove(move);
+	/**
+	 * This method returns the primary hash code by using a bit mask
+	 *
+	 * @param zobristHash
+	 *            The complete hash
+	 * @return the primary hash code
+	 */
+	private int getIndexOfHash(long zobristHash) {
+		return (int) Math.abs(zobristHash & 0xFFFFFF);
+	}
 
-            if (value > score) {
-                score = value;
-            }
-            if (score > alpha) {
-                alpha = score;
-            }
-            if (score >= beta) {
-                cutoffs++;
-                if (moveCounter == 0) {
-                    cutoffsFirstMove++;
-                }
-                break;
-            }
-            moveCounter++;
-        }
+	@Override
+	public void printCounter() {
 
-        tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, score);
-        return score;
-    }
-
-    /**
-     * This method returns the primary hash code by using a bit mask
-     *
-     * @param zobristHash The complete hash
-     * @return the primary hash code
-     */
-    private int getIndexOfHash(long zobristHash) {
-        return (int) Math.abs(zobristHash & 0xFFFFFF);
-    }
+	}
 }

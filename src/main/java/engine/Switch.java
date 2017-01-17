@@ -37,7 +37,7 @@ public class Switch extends CGTValue {
     }
     
     public boolean isNimber() {
-    	return this.left.getValue() > 0 && this.right.getValue() < 0;
+    	return this.left.getValue() >= 0 && this.right.getValue() <= 0;
     }
 
     @Override public boolean equals(Object o) {

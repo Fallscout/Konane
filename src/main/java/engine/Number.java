@@ -25,7 +25,7 @@ public class Number extends CGTValue {
 
         Number number = (Number) o;
 
-        return Double.compare(number.value, value) == 0;
+        return Math.abs(number.value - this.value) < 0.001;
     }
 
     @Override public int hashCode() {

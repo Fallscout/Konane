@@ -18,17 +18,8 @@ public abstract class CGTValue {
 				// Berlekamp et al., p. 44
 				Number right = (Number) rightValue;
 				return new Number(right.getValue() - 1);
-			} 
-			else if (rightValue instanceof Nimber) {
+			} else if (rightValue instanceof Nimber) {
 				return new Number(0);
-//			} else if (rightValue instanceof Switch) {
-//				// Should not be possible
-//				throw new IllegalStateException(
-//						"It should not be possible that left has no moves but right got switch.");
-//			} else if (rightValue instanceof Infinitesimal) {
-//				// Should not be possible
-//				throw new IllegalStateException(
-//						"It should not be possible that left has no moves but right got infinitesimal.");
 			}
 		}
 
@@ -37,17 +28,8 @@ public abstract class CGTValue {
 				// Berlekamp et al., p. 44
 				Number left = (Number) leftValue;
 				return new Number(left.getValue() + 1);
-			}
-			else if (leftValue instanceof Nimber) {
+			} else if (leftValue instanceof Nimber) {
 				return new Number(0);
-//			} else if (leftValue instanceof Switch) {
-//				// Should not be possible
-//				throw new IllegalStateException(
-//						"It should not be possible that right has no moves but left got switch.");
-//			} else if (leftValue instanceof Infinitesimal) {
-//				// Should not be possible
-//				throw new IllegalStateException(
-//						"It should not be possible that right has no moves but left got infinitesimal.");
 			}
 		}
 
@@ -87,7 +69,8 @@ public abstract class CGTValue {
 				if (left.getValue() < 0 && right.getValue() <= 0) {
 					return new Number(right.getValue() - 1);
 				}
-			} else if (rightValue instanceof Nimber) {
+			} 
+			else if (rightValue instanceof Nimber) {
 				if (left.getValue() > 0) {
 					return new Number(left.getValue());
 				} else if (left.getValue() == 0) {
@@ -149,7 +132,7 @@ public abstract class CGTValue {
 			if (rightValue instanceof Number) {
 				Number right = (Number) rightValue;
 				if (right.getValue() > 0) {
-					return new Nimber(1);
+					return new Number(0);
 				} else if (right.getValue() == 0) {
 					return new Infinitesimal(-1);
 				} else {
@@ -222,6 +205,22 @@ public abstract class CGTValue {
 			}
 		}
 
+		String l = "";
+		if(leftValue == null) {
+			l = "null";
+		} else {
+			l = leftValue.toString();
+		}
+		
+		String r = "";
+		if(rightValue == null) {
+			r = "null";
+		} else {
+			r = rightValue.toString();
+		}
+		
+		System.err.println("Could not combine {" + l + "|" + r +"}");
+		
 		// If value cannot be simplified, return nothing and carry on with
 		// Alpha-Beta-Search
 		return null;
@@ -244,13 +243,13 @@ public abstract class CGTValue {
 				Number second = (Number) secondValue;
 
 				if (blackTurn) {
-					if (first.getValue() > second.getValue()) {
+					if (first.getValue() >= second.getValue()) {
 						return first;
 					} else {
 						return second;
 					}
 				} else {
-					if (first.getValue() < second.getValue()) {
+					if (first.getValue() <= second.getValue()) {
 						return first;
 					} else {
 						return second;
@@ -277,7 +276,6 @@ public abstract class CGTValue {
 			} else if (secondValue instanceof Switch) {
 				Switch second = (Switch) secondValue;
 
-				// TODO: Ask Jos
 				if (blackTurn) {
 					if (first.getValue() >= 0) {
 						return first;
@@ -294,7 +292,6 @@ public abstract class CGTValue {
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal) secondValue;
 
-				// TODO: Discuss
 				if (blackTurn) {
 					if (first.getValue() >= 0) {
 						return first;
@@ -493,13 +490,13 @@ public abstract class CGTValue {
 				Infinitesimal second = (Infinitesimal)secondValue;
 				
 				if(blackTurn) {
-					if(first.getValue() > second.getValue()) {
+					if(first.getValue() >= second.getValue()) {
 						return first;
 					} else {
 						return second;
 					}
 				} else {
-					if(first.getValue() < second.getValue()) {
+					if(first.getValue() <= second.getValue()) {
 						return first;
 					} else {
 						return second;
@@ -512,24 +509,56 @@ public abstract class CGTValue {
 	}
 
 	public static boolean lessEqual(CGTValue first, CGTValue second) {
+		if(first == null) {
+			return false;
+		}
+		
+		if(second == null) {
+			return true;
+		}
+		
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
 		return (outcomeBlack == second && outcomeWhite == first) || first.equals(second);
 	}
 
 	public static boolean less(CGTValue first, CGTValue second) {
+		if(first == null) {
+			return false;
+		}
+		
+		if(second == null) {
+			return true;
+		}
+		
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
 		return outcomeBlack == second && outcomeWhite == first && !first.equals(second);
 	}
 
 	public static boolean greaterEqual(CGTValue first, CGTValue second) {
+		if(first == null) {
+			return false;
+		}
+		
+		if(second == null) {
+			return true;
+		}
+		
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
 		return (outcomeBlack == first && outcomeWhite == second) || first.equals(second);
 	}
 
 	public static boolean greater(CGTValue first, CGTValue second) {
+		if(first == null) {
+			return false;
+		}
+		
+		if(second == null) {
+			return true;
+		}
+		
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
 		return outcomeBlack == first && outcomeWhite == second && !first.equals(second);

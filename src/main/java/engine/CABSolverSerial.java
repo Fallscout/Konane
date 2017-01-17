@@ -1,96 +1,84 @@
 package engine;
 
+import java.util.List;
+
 import game.Board;
 import game.Move;
 
-import java.util.Collections;
-import java.util.List;
-
 public class CABSolverSerial extends Solver {
 
-	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
+	private final TTEntry[] tTable = new TTEntry[(int)Math.pow(2, 24)];
 	private final CGTSolver cgtSolver = new CGTSolver();
+	private final CGTValue ZERO = new Number(0);
 
-	private int counter = 0;
-	private int counterTT = 0;
-
+	private int counter;
+	private int foundCGT;
+	private int notFoundCGT;
+	private int cutoff;
+	
 	public OutcomeType solve(Board board) {
-		CGTValue blackOutcome = new Number(-100);
-		CGTValue whiteOutcome = new Number(100);
+		this.counter = 0;
+		this.counterTT = 0;
+		this.foundCGT = 0;
+		this.notFoundCGT = 0;
+		this.cutoff = 0;
+		
+		CGTValue blackOutcome = new Number(-10);
+		CGTValue whiteOutcome = new Number(10);
 
 		CGTValue value;
 
 		List<Move> blackMoves = board.getLeftOptions();
 		for (Move move : blackMoves) {
 			board.executeMove(move);
-			value = solve(board, false, new Number(-100), new Number(100), 1);
+			value = solve(board, false, new Number(-10), new Number(10), 1);
 			board.revertMove(move);
 			blackOutcome = CGTValue.max(value, blackOutcome, true);
+			if(CGTValue.max(blackOutcome, ZERO, true).equals(blackOutcome) || blackOutcome.equals(ZERO)) {
+				break;
+			}
+//			if(CGTValue.greaterEqual(blackOutcome, ZERO)) {
+//				break;
+//			}
 		}
 
 		List<Move> whiteMoves = board.getRightOptions();
 		for (Move move : whiteMoves) {
 			board.executeMove(move);
-			value = solve(board, true, new Number(-100), new Number(100), 1);
+			value = solve(board, true, new Number(-10), new Number(10), 1);
 			board.revertMove(move);
 			whiteOutcome = CGTValue.max(value, whiteOutcome, false);
+			if(CGTValue.max(whiteOutcome, ZERO, false).equals(whiteOutcome) || whiteOutcome.equals(ZERO)) {
+				break;
+			}
+//			if(CGTValue.lessEqual(whiteOutcome, ZERO)) {
+//				break;
+//			}
 		}
 
-		System.out.println("AB-CGT solver:");
-		System.out.println("Nodes looked up in TT: " + counterTT);
+		System.out.println("CAB solver:");
 		System.out.println("Node counter: " + counter);
-		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
-		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
+		System.out.println("Nodes looked up in TT: " + counterTT);
+		System.out.println("Found CGT Value: " + foundCGT);
+		System.out.println("Could not find CGT Value: " + notFoundCGT);
+		System.out.println("Cutoffs: " + cutoff);
+//		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
+//		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
 
 		return determineWinner(blackOutcome, whiteOutcome);
 	}
 
-	@Override
-	public void printCounter() {
-
-	}
-
-	private void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
-		int[] possibleOpponentsMoves = new int[moves.size()];
-		for (int i = 0; i < moves.size(); i++) {
-			Move move = moves.get(i);
-			board.executeMove(move);
-			int opponentsMoves;
-			if (blacksMove) {
-				opponentsMoves = board.getRightOptions().size();
-			} else {
-				opponentsMoves = board.getLeftOptions().size();
-			}
-			board.revertMove(move);
-			possibleOpponentsMoves[i] = opponentsMoves;
-		}
-
-		for (int i = 0; i < possibleOpponentsMoves.length; i++) {
-			for (int j = i + 1; j < possibleOpponentsMoves.length; j++) {
-				int opponentsMoves = possibleOpponentsMoves[i];
-				int opponentsMoves2 = possibleOpponentsMoves[j];
-
-				if (opponentsMoves > opponentsMoves2) {
-					possibleOpponentsMoves[i] = opponentsMoves2;
-					possibleOpponentsMoves[j] = opponentsMoves;
-
-					Collections.swap(moves, i, j);
-				}
-			}
-		}
-	}
-
 	private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
-
 		// Lookup in TT
-		long boardHash = board.getZobristHash();
-		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-		if (ttEntry != null) {
-			if (ttEntry.getZobristHash() == boardHash) {
-				counterTT++;
-				return ttEntry.getCgtValue();
-			}
-		}
+//		long boardHash = board.getZobristHash();
+//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+//		if (ttEntry != null) {
+//			if (ttEntry.getZobristHash() == boardHash) {
+//				counterTT++;
+//				return ttEntry.getCgtValue();
+//			}
+//		}
+		
 		counter++;
 		CGTValue returnValue = null;
 		Move bestLeftOption = null;
@@ -110,13 +98,19 @@ public class CABSolverSerial extends Solver {
 				returnValue = new Number(1); // Black wins
 			}
 		} else {
-			orderMoves(availableMoves, board, blackTurn);
+//			orderMoves(availableMoves, board, blackTurn);
 		}
 
 		if (returnValue == null) {
 			if (board.isEndgame()) {
 				// Do CGT Stuff
 				returnValue = cgtSolver.calculate(board);
+				if(returnValue != null) {
+//					board.printToFile(returnValue);
+					foundCGT++;
+				} else {
+					notFoundCGT++;
+				}
 			}
 		}
 
@@ -124,47 +118,57 @@ public class CABSolverSerial extends Solver {
 
 		if (returnValue == null) {
 			if (blackTurn) {
-				returnValue = new Number(-Double.MAX_VALUE);
+				returnValue = new Number(-1000);
 				for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, false, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-					if (CGTValue.greater(value, returnValue)) {
-						returnValue = value;
-					}
+					returnValue = CGTValue.max(value, returnValue, true);
+//					if (CGTValue.greater(value, returnValue)) {
+//						returnValue = value;
+//					}
 
-					if (CGTValue.greater(returnValue, alpha)) {
-						alpha = returnValue;
-						bestLeftOption = move;
-					}
-					if (CGTValue.lessEqual(beta, alpha)) {
+					alpha = CGTValue.max(returnValue, alpha, true);
+//					if (CGTValue.greater(returnValue, alpha)) {
+//						alpha = returnValue;
+//						bestLeftOption = move;
+//					}
+					
+					CGTValue test = CGTValue.max(alpha, beta, true);
+					if (test.equals(alpha) || alpha.equals(beta)) {
+						cutoff++;
 						break;
 					}
 				}
 			} else {
-				returnValue = new Number(Double.MAX_VALUE);
+				returnValue = new Number(1000);
 				for (Move move : availableMoves) {
 					board.executeMove(move);
 					value = solve(board, true, alpha, beta, ply + 1);
 					board.revertMove(move);
 
-					if (CGTValue.less(value, returnValue)) {
-						returnValue = value;
-					}
-
-					if (CGTValue.less(returnValue, beta)) {
-						beta = returnValue;
-						bestRightOption = move;
-					}
-					if (CGTValue.lessEqual(beta, alpha)) {
+					returnValue = CGTValue.max(value, returnValue, false);
+//					if (CGTValue.less(value, returnValue)) {
+//						returnValue = value;
+//					}
+					
+					beta = CGTValue.max(returnValue, beta, false);
+//					if (CGTValue.less(returnValue, beta)) {
+//						beta = returnValue;
+//						bestRightOption = move;
+//					}
+					
+					CGTValue test = CGTValue.max(alpha, beta, false);
+					if (test.equals(beta) || alpha.equals(beta)) {
+						cutoff++;
 						break;
 					}
 				}
 			}
 		}
 
-		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
+//		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
 
 		return returnValue;
 	}
@@ -180,7 +184,7 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.BLACK;
 				}
 
-				if (black.getValue() > 0 && white.getValue() < 0) {
+				if (black.getValue() >= 0 && white.getValue() <= 0) {
 					return OutcomeType.FIRST;
 				}
 
@@ -468,5 +472,10 @@ public class CABSolverSerial extends Solver {
 	 */
 	private int getIndexOfHash(long zobristHash) {
 		return (int) Math.abs(zobristHash & 0xFFFFFF);
+	}
+	
+	@Override
+	public void printCounter() {
+
 	}
 }
