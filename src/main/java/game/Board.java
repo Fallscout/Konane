@@ -17,19 +17,10 @@ public class Board {
 	private final List<Piece> blackPieces;
 	private final List<Piece> whitePieces;
 	private final ZobristHashCalculator hashCalculator;
-	
-	private final String filepath = "Documents\\cgsuite.txt";
-	public FileWriter writer;
 
 	private long zobristHash;
 
 	public Board(Piece[][] gameState) {
-		try {
-			this.writer = new FileWriter(filepath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		this.blackPieces = new ArrayList<>();
 		this.whitePieces = new ArrayList<>();
@@ -59,12 +50,6 @@ public class Board {
 	}
 
 	public Board(int rows, int cols, boolean blackInUpperLeftCorner) {
-		try {
-			this.writer = new FileWriter(filepath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		this.rows = rows;
 		this.cols = cols;
@@ -118,7 +103,6 @@ public class Board {
 	}
 
 	public Board(Board board) {
-		this.writer = board.writer;
 		this.rows = board.rows;
 		this.cols = board.cols;
 
@@ -332,41 +316,6 @@ public class Board {
             return false;
         return hashCalculator != null ? hashCalculator.equals(board.hashCalculator) : board.hashCalculator == null;
     }
-
-	public void printToFile(CGTValue result) {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("g := game.grid.Konane(\"");
-		
-		for (int row = 0; row < this.rows; row++) {
-			for (int col = 0; col < this.cols; col++) {
-				Piece piece = this.gameState[row][col];
-				if (piece != null) {
-					if (piece.isBlack()) {
-						builder.append("x");
-					} else {
-						builder.append("o");
-					}
-				} else {
-					builder.append(".");
-				}
-			}
-			if (row < this.rows - 1) {
-				builder.append("|");
-			}
-		}
-		
-		builder.append("\")");
-		
-		builder.append(" = " + result.toString() + "\n");
-
-		try {
-			this.writer.write(builder.toString());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
     @Override public int hashCode() {
         int result = rows;

@@ -52,8 +52,8 @@ public class Controller {
         solvers[0] = new AlphaBetaSolver();
         solvers[1] = new CABSolverSerial();
 
-        for (int i = 3; i < maxSize / 3; i++) {
-            for (int j = 3; j < maxSize / 3; j++) {
+        for (int i = 4; i < maxSize / 3; i++) {
+            for (int j = 4; j < maxSize / 3; j++) {
 
                 if (i * j > maxSize) {
                     continue;
@@ -64,13 +64,16 @@ public class Controller {
                 for (Solver solver : solvers) {
                     Board board = new Board(i, j, false);
                     OutcomeType currentSolverOutcome = solver.solveWithTime(board);
+                    System.out.println(currentSolverOutcome);
                     if (outcomeType == null) {
                         outcomeType = currentSolverOutcome;
                     } else {
                         if (outcomeType != currentSolverOutcome) {
-                            System.err.println("!!!NOT THE SAME OUTCOMETYPE FOR " + i + "x" + j + " BOARD!!!");
-                            System.err.println("Former outcome: " + outcomeType);
-                            System.err.println("Current outcome: " + currentSolverOutcome);
+                        	System.out.println();
+                            System.out.println("!!!NOT THE SAME OUTCOMETYPE FOR " + i + "x" + j + " BOARD!!!");
+                            System.out.println("Former outcome: " + outcomeType);
+                            System.out.println("Current outcome: " + currentSolverOutcome);
+                            System.out.println();
                         }
                     }
                     System.out.println();

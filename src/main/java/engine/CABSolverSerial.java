@@ -1,9 +1,12 @@
 package engine;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import game.Board;
 import game.Move;
+import game.Piece;
 
 public class CABSolverSerial extends Solver {
 
@@ -11,6 +14,9 @@ public class CABSolverSerial extends Solver {
 	private final CGTSolver cgtSolver = new CGTSolver();
 	private final CGTValue ZERO = new Number(0);
 
+	private final String filepath = "Documents\\cgsuite.txt";
+	public FileWriter writer;
+	
 	private int counter;
 	private int foundCGT;
 	private int notFoundCGT;
@@ -484,6 +490,41 @@ public class CABSolverSerial extends Solver {
 	private int getIndexOfHash(long zobristHash) {
 		return (int) Math.abs(zobristHash & 0xFFFFFF);
 	}
+	
+//	public void printToFile(CGTValue result) {
+//		StringBuilder builder = new StringBuilder();
+//
+//		builder.append("g := game.grid.Konane(\"");
+//		
+//		for (int row = 0; row < this.rows; row++) {
+//			for (int col = 0; col < this.cols; col++) {
+//				Piece piece = this.gameState[row][col];
+//				if (piece != null) {
+//					if (piece.isBlack()) {
+//						builder.append("x");
+//					} else {
+//						builder.append("o");
+//					}
+//				} else {
+//					builder.append(".");
+//				}
+//			}
+//			if (row < this.rows - 1) {
+//				builder.append("|");
+//			}
+//		}
+//		
+//		builder.append("\")");
+//		
+//		builder.append(" = " + result.toString() + "\n");
+//
+//		try {
+//			this.writer.write(builder.toString());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	@Override
 	public void printCounter() {
