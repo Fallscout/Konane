@@ -3,19 +3,22 @@ package game;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import engine.CGTValue;
 import engine.ZobristHashCalculator;
 
 public class Board {
+
 	private final int rows;
 	private final int cols;
 	private final Piece[][] gameState;
 	private final List<Piece> blackPieces;
 	private final List<Piece> whitePieces;
 	private final ZobristHashCalculator hashCalculator;
-	private final String filepath = "Documents\\placeholder.txt";
+	
+	private final String filepath = "Documents\\cgsuite.txt";
 	public FileWriter writer;
 
 	private long zobristHash;
@@ -140,74 +143,39 @@ public class Board {
 	}
 
 	public void executeMove(Move move) {
-		Piece movingPiece = this.gameState[move.getSourceRow()][move.getSourceCol()];
+        Piece movingPiece = this.gameState[move.getSourceRow()][move.getSourceCol()];
 
-		this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
+        Piece capturedPiece = this.gameState[(move.getSourceRow() + move.getTargetRow()) / 2][(move.getSourceCol() + move.getTargetCol())
+            / 2];
+        if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
+            this.removePiece(capturedPiece);
+            move.setCapturedPiece(capturedPiece);
+        } else {
+            throw new IllegalStateException(
+                "This is an invalid move. From (" + move.getSourceRow() + "|" + move.getSourceCol() + ") to (" + move.getTargetRow() + "|"
+                    + move.getTargetCol() + ") on board:\n" + getBoardRepresentation());
+        }
 
-		int deltaRow = move.getTargetRow() - move.getSourceRow();
-		int deltaCol = move.getTargetCol() - move.getSourceCol();
-
-		if (deltaCol > 0) { // move right
-			for (int col = move.getSourceCol() + 1; col < move.getTargetCol(); col++) {
-				Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-				if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-					this.removePiece(capturedPiece);
-					move.getCapturedPieces().add(capturedPiece);
-				}
-			}
-		} else if (deltaCol < 0) { // move left
-			for (int col = move.getSourceCol() - 1; col > move.getTargetCol(); col--) {
-				Piece capturedPiece = this.gameState[move.getSourceRow()][col];
-				if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-					this.removePiece(capturedPiece);
-					move.getCapturedPieces().add(capturedPiece);
-				}
-			}
-		} else if (deltaRow > 0) { // move down
-			for (int row = move.getSourceRow() + 1; row < move.getTargetRow(); row++) {
-				Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-				if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-					this.removePiece(capturedPiece);
-					move.getCapturedPieces().add(capturedPiece);
-				}
-			}
-		} else if (deltaRow < 0) { // move up
-			for (int row = move.getSourceRow() - 1; row > move.getTargetRow(); row--) {
-				Piece capturedPiece = this.gameState[row][move.getSourceCol()];
-				if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-					this.removePiece(capturedPiece);
-					move.getCapturedPieces().add(capturedPiece);
-				}
-			}
-		}
-
-		movingPiece.setRow(move.getTargetRow());
-		movingPiece.setCol(move.getTargetCol());
-		this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
-		this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
-	}
+        movingPiece.setRow(move.getTargetRow());
+        movingPiece.setCol(move.getTargetCol());
+        this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
+        this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
+        this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
+    }
 
 	public void revertMove(Move move) {
-		Piece movingPiece = this.gameState[move.getTargetRow()][move.getTargetCol()];
+        Piece movingPiece = this.gameState[move.getTargetRow()][move.getTargetCol()];
+        Piece capturedPiece = move.getCapturedPiece();
 
-		this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
+        this.addPiece(capturedPiece);
 
-		for (Piece piece : move.getCapturedPieces()) {
-			this.gameState[piece.getRow()][piece.getCol()] = piece;
+        movingPiece.setRow(move.getSourceRow());
+        movingPiece.setCol(move.getSourceCol());
+        this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
+        this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
 
-			if (piece.isBlack()) {
-				this.blackPieces.add(piece);
-			} else {
-				this.whitePieces.add(piece);
-			}
-		}
-
-		movingPiece.setRow(move.getSourceRow());
-		movingPiece.setCol(move.getSourceCol());
-		this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
-		this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
-		move.getCapturedPieces().clear();
-	}
+        this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
+    }
 
 	public Board negate() {
 		Board board = new Board(this);
@@ -282,33 +250,33 @@ public class Board {
 	}
 
 	private List<Move> getValidMoves(Piece piece) {
-		List<Move> moves = new ArrayList<>();
+        List<Move> moves = new ArrayList<>();
 
-		int row = piece.getRow();
-		int col = piece.getCol();
+        int row = piece.getRow();
+        int col = piece.getCol();
 
-		if (row - 2 >= 0 && this.gameState[row - 1][col] != null
-				&& this.gameState[row - 1][col].isBlack() != piece.isBlack() && this.gameState[row - 2][col] == null) {
-			moves.add(new Move(row, col, row - 2, col));
-		}
+        if (row - 2 >= 0 && this.gameState[row - 1][col] != null && this.gameState[row - 1][col].isBlack() != piece.isBlack()
+            && this.gameState[row - 2][col] == null) {
+            moves.add(new Move(row, col, row - 2, col));
+        }
 
-		if (row + 2 < this.rows && this.gameState[row + 1][col] != null
-				&& this.gameState[row + 1][col].isBlack() != piece.isBlack() && this.gameState[row + 2][col] == null) {
-			moves.add(new Move(row, col, row + 2, col));
-		}
+        if (row + 2 < this.rows && this.gameState[row + 1][col] != null && this.gameState[row + 1][col].isBlack() != piece.isBlack()
+            && this.gameState[row + 2][col] == null) {
+            moves.add(new Move(row, col, row + 2, col));
+        }
 
-		if (col - 2 >= 0 && this.gameState[row][col - 1] != null
-				&& this.gameState[row][col - 1].isBlack() != piece.isBlack() && this.gameState[row][col - 2] == null) {
-			moves.add(new Move(row, col, row, col - 2));
-		}
+        if (col - 2 >= 0 && this.gameState[row][col - 1] != null && this.gameState[row][col - 1].isBlack() != piece.isBlack()
+            && this.gameState[row][col - 2] == null) {
+            moves.add(new Move(row, col, row, col - 2));
+        }
 
-		if (col + 2 < this.cols && this.gameState[row][col + 1] != null
-				&& this.gameState[row][col + 1].isBlack() != piece.isBlack() && this.gameState[row][col + 2] == null) {
-			moves.add(new Move(row, col, row, col + 2));
-		}
+        if (col + 2 < this.cols && this.gameState[row][col + 1] != null && this.gameState[row][col + 1].isBlack() != piece.isBlack()
+            && this.gameState[row][col + 2] == null) {
+            moves.add(new Move(row, col, row, col + 2));
+        }
 
-		return moves;
-	}
+        return moves;
+    }
 
 	public boolean isEndgame() {
 		int pieces = this.blackPieces.size() + this.whitePieces.size();
@@ -324,6 +292,15 @@ public class Board {
 		}
 		this.gameState[piece.getRow()][piece.getCol()] = null;
 	}
+	
+    private void addPiece(Piece piece) {
+        if (piece.isBlack()) {
+            this.blackPieces.add(piece);
+        } else {
+            this.whitePieces.add(piece);
+        }
+        this.gameState[piece.getRow()][piece.getCol()] = piece;
+    }
 
 	public Piece getPieceAtPosition(int row, int col) {
 		return gameState[row][col];
@@ -332,6 +309,29 @@ public class Board {
 	public long getZobristHash() {
 		return zobristHash;
 	}
+	
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Board board = (Board) o;
+
+        if (rows != board.rows)
+            return false;
+        if (cols != board.cols)
+            return false;
+        if (zobristHash != board.zobristHash)
+            return false;
+        if (!Arrays.deepEquals(gameState, board.gameState))
+            return false;
+        if (blackPieces != null ? !blackPieces.containsAll(board.blackPieces) : board.blackPieces != null)
+            return false;
+        if (whitePieces != null ? !whitePieces.containsAll(board.whitePieces) : board.whitePieces != null)
+            return false;
+        return hashCalculator != null ? hashCalculator.equals(board.hashCalculator) : board.hashCalculator == null;
+    }
 
 	public void printToFile(CGTValue result) {
 		StringBuilder builder = new StringBuilder();
@@ -356,9 +356,9 @@ public class Board {
 			}
 		}
 		
-		builder.append("\")\n");
+		builder.append("\")");
 		
-//		builder.append(" = " + result.toString() + "\n");
+		builder.append(" = " + result.toString() + "\n");
 
 		try {
 			this.writer.write(builder.toString());
@@ -367,4 +367,15 @@ public class Board {
 			e.printStackTrace();
 		}
 	}
+	
+    @Override public int hashCode() {
+        int result = rows;
+        result = 31 * result + cols;
+        result = 31 * result + Arrays.deepHashCode(gameState);
+        result = 31 * result + (blackPieces != null ? blackPieces.hashCode() : 0);
+        result = 31 * result + (whitePieces != null ? whitePieces.hashCode() : 0);
+        result = 31 * result + (hashCalculator != null ? hashCalculator.hashCode() : 0);
+        result = 31 * result + (int) (zobristHash ^ (zobristHash >>> 32));
+        return result;
+    }
 }

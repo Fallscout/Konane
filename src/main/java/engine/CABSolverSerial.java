@@ -37,9 +37,6 @@ public class CABSolverSerial extends Solver {
 			if(CGTValue.max(blackOutcome, ZERO, true).equals(blackOutcome) || blackOutcome.equals(ZERO)) {
 				break;
 			}
-//			if(CGTValue.greaterEqual(blackOutcome, ZERO)) {
-//				break;
-//			}
 		}
 
 		List<Move> whiteMoves = board.getRightOptions();
@@ -51,9 +48,6 @@ public class CABSolverSerial extends Solver {
 			if(CGTValue.max(whiteOutcome, ZERO, false).equals(whiteOutcome) || whiteOutcome.equals(ZERO)) {
 				break;
 			}
-//			if(CGTValue.lessEqual(whiteOutcome, ZERO)) {
-//				break;
-//			}
 		}
 
 		System.out.println("CAB solver:");
@@ -74,8 +68,13 @@ public class CABSolverSerial extends Solver {
 //		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
 //		if (ttEntry != null) {
 //			if (ttEntry.getZobristHash() == boardHash) {
-//				counterTT++;
-//				return ttEntry.getCgtValue();
+//				if (blackTurn && ttEntry.getLeftValue() != null) {
+//					return ttEntry.getLeftValue();
+//				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+//					return ttEntry.getRightValue();
+//				}
+//			} else {
+//				ttEntry = null;
 //			}
 //		}
 		
@@ -168,7 +167,19 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
-//		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
+//		if (ttEntry == null) {
+//			if (blackTurn) {
+//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+//			} else {
+//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+//			}
+//		} else {
+//			if (blackTurn) {
+//				ttEntry.setLeftValue(returnValue);
+//			} else {
+//				ttEntry.setRightValue(returnValue);
+//			}
+//		}
 
 		return returnValue;
 	}

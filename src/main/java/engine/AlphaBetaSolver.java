@@ -66,14 +66,19 @@ public class AlphaBetaSolver extends Solver {
 
 	private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
 		// Lookup in TT
-//		long boardHash = board.getZobristHash();
-//		SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-//		if (ttEntry != null) {
-//			if (ttEntry.getZobristHash() == boardHash) {
-//				counterTT++;
-//				return ttEntry.getValue();
-//			}
-//		}
+//        long boardHash = board.getZobristHash();
+//        SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+//        if (ttEntry != null) {
+//            if (ttEntry.getZobristHash() == boardHash) {
+//                if (blackTurn && ttEntry.getLeftValue() != null) {
+//                    return ttEntry.getLeftValue();
+//                } else if (!blackTurn && ttEntry.getRightValue() != null) {
+//                    return ttEntry.getRightValue();
+//                }
+//            } else {
+//                ttEntry = null;
+//            }
+//        }
 
 		counter++;
 		int returnValue = 0;
@@ -137,7 +142,19 @@ public class AlphaBetaSolver extends Solver {
 			}
 		}
 
-//		tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, returnValue);
+//        if (ttEntry == null) {
+//            if (blackTurn) {
+//                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, score, null);
+//            } else {
+//                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, null, score);
+//            }
+//        } else {
+//            if (blackTurn) {
+//                ttEntry.setLeftValue(score);
+//            } else {
+//                ttEntry.setRightValue(score);
+//            }
+//        }
 		return returnValue;
 	}
 

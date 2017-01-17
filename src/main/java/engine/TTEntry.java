@@ -4,27 +4,29 @@ import game.Move;
 
 public class TTEntry {
     private final long zobristHash;
-    private final Move bestLeftMove;
-    private final Move bestRightMove;
-    private final CGTValue cgtValue;
+    private CGTValue leftValue;
+    private CGTValue rightValue;
 
-    public TTEntry(long zobristHash, Move bestLeftMove, Move bestRightMove, CGTValue cgtValue) {
+    public TTEntry(long zobristHash, CGTValue leftValue, CGTValue rightValue) {
         this.zobristHash = zobristHash;
-        this.bestLeftMove = bestLeftMove;
-        this.bestRightMove = bestRightMove;
-        this.cgtValue = cgtValue;
+        this.leftValue = leftValue;
+        this.rightValue = rightValue;
     }
 
-	public Move getBestLeftMove() {
-		return bestLeftMove;
-	}
-
-	public Move getBestRightMove() {
-        return bestRightMove;
+    public CGTValue getLeftValue() {
+        return leftValue;
     }
 
-    public CGTValue getCgtValue() {
-        return cgtValue;
+    public void setLeftValue(CGTValue leftValue) {
+        this.leftValue = leftValue;
+    }
+
+    public CGTValue getRightValue() {
+        return rightValue;
+    }
+
+    public void setRightValue(CGTValue rightValue) {
+        this.rightValue = rightValue;
     }
 
     public long getZobristHash() {

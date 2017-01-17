@@ -4,11 +4,10 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CGTValueTest {
+@SuppressWarnings("EqualsBetweenInconvertibleTypes") public class CGTValueTest {
 
 	/*
-	 * ------------------------------------------------- 
-	 * combine()
+	 * ------------------------------------------------- combine()
 	 * -------------------------------------------------
 	 */
 
@@ -30,19 +29,22 @@ public class CGTValueTest {
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-1)));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_null_Nimber() {
-		CGTValue.combine(null, new Nimber(1));
+		CGTValue combine = CGTValue.combine(null, new Nimber(1));
+		Assert.assertThat(combine, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_null_Switch() {
-		CGTValue.combine(null, new Switch(new Number(1), new Number(0)));
+		CGTValue combine = CGTValue.combine(null, new Switch(new Number(1), new Number(0)));
+		Assert.assertThat(combine, CoreMatchers.equalTo(null));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_null_Infinitesimal() {
-		CGTValue.combine(null, new Infinitesimal(1));
+		CGTValue combine = CGTValue.combine(null, new Infinitesimal(1));
+		Assert.assertThat(combine, CoreMatchers.equalTo(null));
 	}
 
 	@Test
@@ -63,19 +65,22 @@ public class CGTValueTest {
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_Nimber_null() {
-		CGTValue.combine(new Nimber(1), null);
+		CGTValue combine = CGTValue.combine(new Nimber(1), null);
+		Assert.assertThat(combine, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_Switch_null() {
-		CGTValue.combine(new Switch(new Number(1), new Number(0)), null);
+		CGTValue combine = CGTValue.combine(new Switch(new Number(1), new Number(0)), null);
+		Assert.assertThat(combine, CoreMatchers.equalTo(null));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void combine_Infinitesimal_null() {
-		CGTValue.combine(new Infinitesimal(1), null);
+		CGTValue combine = CGTValue.combine(new Infinitesimal(1), null);
+		Assert.assertThat(combine, CoreMatchers.equalTo(null));
 	}
 
 	@Test
@@ -99,13 +104,13 @@ public class CGTValueTest {
 	@Test
 	public void combine_number_zeroNumber_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Number(20));
-		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(20)));
+		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(1)));
 	}
 
 	@Test
 	public void combine_number_negNumber_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Number(-3), new Number(0));
-		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-1)));
 	}
 
 	@Test
@@ -151,172 +156,206 @@ public class CGTValueTest {
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_number_posNumber_posSwitch() {
+	@Test
+	public void combine_number_posNumber_posSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(2), new Switch(new Number(5), new Number(4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(2)));
 	}
 
-	@Test public void combine_number_negNumber_posSwitch() {
+	@Test
+	public void combine_number_negNumber_posSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(-2), new Switch(new Number(5), new Number(4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_number_zeroNumber_posSwitch() {
+	@Test
+	public void combine_number_zeroNumber_posSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Switch(new Number(5), new Number(4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(1)));
 	}
 
-	@Test public void combine_number_posNumber_negSwitch() {
+	@Test
+	public void combine_number_posNumber_negSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(2), new Switch(new Number(-2), new Number(-4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_number_negNumber_negSwitch() {
+	@Test
+	public void combine_number_negNumber_negSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(-2), new Switch(new Number(-2), new Number(-4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
 
-	@Test public void combine_number_zeroNumber_negSwitch() {
+	@Test
+	public void combine_number_zeroNumber_negSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Switch(new Number(-2), new Number(-4)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_number_posNumber_mixedSwitch() {
+	@Test
+	public void combine_number_posNumber_mixedSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(2), new Switch(new Number(2), new Number(-2)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(2)));
 	}
 
-	@Test public void combine_number_negNumber_mixedSwitch() {
+	@Test
+	public void combine_number_negNumber_mixedSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(-2), new Switch(new Number(2), new Number(-2)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_number_zeroNumber_mixedSwitch() {
+	@Test
+	public void combine_number_zeroNumber_mixedSwitch() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Switch(new Number(2), new Number(-2)));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(1)));
 	}
 
-	@Test public void combine_number_posNumber_posInf() {
+	@Test
+	public void combine_number_posNumber_posInf() {
 		CGTValue outcome = CGTValue.combine(new Number(2), new Infinitesimal(1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(2)));
 	}
 
-	@Test public void combine_number_negNumber_posInf() {
+	@Test
+	public void combine_number_negNumber_posInf() {
 		CGTValue outcome = CGTValue.combine(new Number(-2), new Infinitesimal(1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_number_zeroNumber_posInf() {
+	@Test
+	public void combine_number_zeroNumber_posInf() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Infinitesimal(1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(1)));
 	}
 
-	@Test public void combine_number_posNumber_negInf() {
+	@Test
+	public void combine_number_posNumber_negInf() {
 		CGTValue outcome = CGTValue.combine(new Number(2), new Infinitesimal(-1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_number_negNumber_negInf() {
+	@Test
+	public void combine_number_negNumber_negInf() {
 		CGTValue outcome = CGTValue.combine(new Number(-2), new Infinitesimal(-1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
 
-	@Test public void combine_number_zeroNumber_negInf() {
+	@Test
+	public void combine_number_zeroNumber_negInf() {
 		CGTValue outcome = CGTValue.combine(new Number(0), new Infinitesimal(-1));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_nimber_posNumber() {
+	@Test
+	public void combine_nimber_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Nimber(1), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_nimber_zeroNumber() {
+	@Test
+	public void combine_nimber_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Nimber(1), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(-1)));
 	}
 
-	@Test public void combine_nimber_negNumber() {
+	@Test
+	public void combine_nimber_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Nimber(1), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
 
-	@Test public void combine_nimber_nimber() {
+	@Test
+	public void combine_nimber_nimber() {
 		CGTValue outcome = CGTValue.combine(new Nimber(12), new Nimber(5));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(9)));
 	}
 
-	@Test public void combine_posSwitch_posNumber() {
+	@Test
+	public void combine_posSwitch_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(4), new Number(2)), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(2)));
 	}
 
-	@Test public void combine_posSwitch_zeroNumber() {
+	@Test
+	public void combine_posSwitch_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(4), new Number(2)), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_posSwitch_negNumber() {
+	@Test
+	public void combine_posSwitch_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(4), new Number(2)), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_negSwitch_posNumber() {
+	@Test
+	public void combine_negSwitch_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(-2), new Number(-4)), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_negSwitch_zeroNumber() {
+	@Test
+	public void combine_negSwitch_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(-2), new Number(-4)), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(-1)));
 	}
 
-	@Test public void combine_negSwitch_negNumber() {
+	@Test
+	public void combine_negSwitch_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(-2), new Number(-4)), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
 
-	@Test public void combine_mixedSwitch_posNumber() {
+	@Test
+	public void combine_mixedSwitch_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(2), new Number(-4)), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_mixedSwitch_zeroNumber() {
+	@Test
+	public void combine_mixedSwitch_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(2), new Number(-4)), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(-1)));
 	}
 
-	@Test public void combine_mixedSwitch_negNumber() {
+	@Test
+	public void combine_mixedSwitch_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Switch(new Number(2), new Number(-4)), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
 
-	@Test public void combine_posInf_posNumber() {
+	@Test
+	public void combine_posInf_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(1), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(2)));
 	}
 
-	@Test public void combine_posInf_zeroNumber() {
+	@Test
+	public void combine_posInf_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(1), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_posInf_negNumber() {
+	@Test
+	public void combine_posInf_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(1), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
 	}
 
-	@Test public void combine_negInf_posNumber() {
+	@Test
+	public void combine_negInf_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(-1), new Number(2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
 	}
 
-	@Test public void combine_negInf_zeroNumber() {
+	@Test
+	public void combine_negInf_zeroNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(-1), new Number(0));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Infinitesimal(-1)));
 	}
 
-	@Test public void combine_negInf_negNumber() {
+	@Test
+	public void combine_negInf_negNumber() {
 		CGTValue outcome = CGTValue.combine(new Infinitesimal(-1), new Number(-2));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(-2)));
 	}
@@ -336,51 +375,51 @@ public class CGTValueTest {
 
 	@Test
 	public void max_Number_negNumber() {
-		CGTValue max = CGTValue.max(new Number(2), new Number(-3),  true);
+		CGTValue max = CGTValue.max(new Number(2), new Number(-3), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(2)));
 
 		max = CGTValue.max(new Number(2), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_negNumber_negNumber() {
-		CGTValue max = CGTValue.max(new Number(-2), new Number(-3),  true);
+		CGTValue max = CGTValue.max(new Number(-2), new Number(-3), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-2)));
 
 		max = CGTValue.max(new Number(-2), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_Nimber_Number() {
-		//Black
-		CGTValue max = CGTValue.max(new Nimber(1), new Number(-3),  true);
+		// Black
+		CGTValue max = CGTValue.max(new Nimber(1), new Number(-3), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
-		
+
 		max = CGTValue.max(new Nimber(1), new Number(3), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(3)));
-		//White
+		// White
 		max = CGTValue.max(new Nimber(1), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
-		
+
 		max = CGTValue.max(new Nimber(1), new Number(3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
-	
+
 	@Test
 	public void max_Number_Nimber() {
-		//Black
-		CGTValue max = CGTValue.max(new Number(-3), new Nimber(1),  true);
+		// Black
+		CGTValue max = CGTValue.max(new Number(-3), new Nimber(1), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
-		
-		max = CGTValue.max(new Number(3), new Nimber(1),  true);
+
+		max = CGTValue.max(new Number(3), new Nimber(1), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(3)));
 
-		//White
+		// White
 		max = CGTValue.max(new Number(-3), new Nimber(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
-		
+
 		max = CGTValue.max(new Number(3), new Nimber(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
@@ -390,144 +429,264 @@ public class CGTValueTest {
 		// Always prefer number? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Number(-3), new Switch(first, second), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 
 		max = CGTValue.max(new Number(-3), new Switch(first, second), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_zeroNumber_Switch() {
 		// Always prefer number? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Number(0), new Switch(first, second), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 
 		max = CGTValue.max(new Number(0), new Switch(first, second), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 	}
-	
+
 	@Test
 	public void max_Switch_negNumber() {
 		// Always prefer number? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Switch(first, second), new Number(-3), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 
 		max = CGTValue.max(new Switch(first, second), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_Switch_zeroNumber() {
 		// Always prefer number? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Switch(first, second), new Number(0), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 
 		max = CGTValue.max(new Switch(first, second), new Number(0), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 	}
-	
+
 	@Test
 	public void max_negNumber_Infinitesimal() {
-		//TODO: Always prefer number? For both black and white??
 		CGTValue max = CGTValue.max(new Number(-3), new Infinitesimal(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Infinitesimal(1)));
 
 		max = CGTValue.max(new Number(-3), new Infinitesimal(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_zeroNumber_Infinitesimal() {
-		//TODO: Always prefer number? For both black and white??
 		CGTValue max = CGTValue.max(new Number(0), new Infinitesimal(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 
 		max = CGTValue.max(new Number(0), new Infinitesimal(1), false);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 	}
-	
+
 	@Test
 	public void max_Infinitesimal_negNumber() {
-		//TODO:Always prefer number? For both black and white??
 		CGTValue max = CGTValue.max(new Number(-3), new Infinitesimal(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Infinitesimal(1)));
 
 		max = CGTValue.max(new Number(-3), new Infinitesimal(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
 	}
-	
+
 	@Test
 	public void max_Infinitesimal_zeroNumber() {
-		//TODO: Always prefer number? For both black and white??
 		CGTValue max = CGTValue.max(new Number(0), new Infinitesimal(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 
 		max = CGTValue.max(new Number(0), new Infinitesimal(1), false);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Number(0)));
 	}
-	
+
 	@Test
 	public void max_Nimber_Infinitesimal() {
-		//TODO:Always prefer nimber? For both black and white??
+
 		CGTValue max = CGTValue.max(new Nimber(1), new Infinitesimal(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Infinitesimal(1)));
 
 		max = CGTValue.max(new Nimber(1), new Infinitesimal(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
-	
+
 	@Test
 	public void max_Infinitesimal_Nimber() {
-		//TODO: Always prefer nimber? For both black and white??
-		CGTValue max = CGTValue.max(new Infinitesimal(1), new Nimber(1), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 
-		max = CGTValue.max(new Infinitesimal(1), new Nimber(1),  false);
+		CGTValue max = CGTValue.max(new Infinitesimal(1), new Nimber(1), true);
+		Assert.assertThat(max, CoreMatchers.equalTo(new Infinitesimal(1)));
+
+		max = CGTValue.max(new Infinitesimal(1), new Nimber(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
-	
+
 	@Test
 	public void max_Nimber_Switch() {
-		//TODO:Always prefer Switch? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Nimber(1), new Switch(first, second), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 
 		max = CGTValue.max(new Nimber(1), new Switch(first, second), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
-	
+
 	@Test
 	public void max_Switch_Nimber() {
-		//TODO: Always prefer Switch? For both black and white??
 		Number first = new Number(2);
 		Number second = new Number(-3);
-		
+
 		CGTValue max = CGTValue.max(new Switch(first, second), new Nimber(1), true);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 
-		max = CGTValue.max(new Switch(first, second), new Nimber(1),  false);
+		max = CGTValue.max(new Switch(first, second), new Nimber(1), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Nimber(1)));
 	}
-	
+
 	/*
 	 * ------------------------------------------------- Equal methods
 	 * -------------------------------------------------
 	 */
+
+	@Test
+	public void less_Number_Number() {
+		boolean less = CGTValue.less(new Number(4), new Number(5));
+		Assert.assertThat(less, CoreMatchers.equalTo(true));
+
+		less = CGTValue.less(new Number(5), new Number(4));
+		Assert.assertThat(less, CoreMatchers.equalTo(false));
+	}
+
+	@Test
+	public void less_Number_Nimber() {
+		boolean less = CGTValue.less(new Number(4), new Nimber(1));
+		Assert.assertThat(less, CoreMatchers.equalTo(false));
+
+		less = CGTValue.less(new Number(-2), new Nimber(1));
+		Assert.assertThat(less, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void less_Nimber_Number() {
+		boolean less = CGTValue.less(new Nimber(1), new Number(4));
+		Assert.assertThat(less, CoreMatchers.equalTo(true));
+
+		less = CGTValue.less(new Nimber(1), new Number(-2));
+		Assert.assertThat(less, CoreMatchers.equalTo(false));
+	}
+
+	@Test
+	public void lessEqual_Number_Number() {
+		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Number(5));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+
+		lessEqual = CGTValue.lessEqual(new Number(5), new Number(4));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+
+		lessEqual = CGTValue.lessEqual(new Number(5), new Number(5));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void lessEqual_Number_Nimber() {
+		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Nimber(1));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+
+		lessEqual = CGTValue.lessEqual(new Number(-2), new Nimber(1));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+
+		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void lessEqual_Nimber_Number() {
+		boolean lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(4));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+
+		lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(-2));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+
+		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
+		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	}
 	
+	@Test
+	public void greater_Number_Number() {
+		boolean greater = CGTValue.greater(new Number(4), new Number(5));
+		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+
+		greater = CGTValue.greater(new Number(5), new Number(4));
+		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void greater_Number_Nimber() {
+		boolean greater = CGTValue.greater(new Number(4), new Nimber(1));
+		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+
+		greater = CGTValue.greater(new Number(-2), new Nimber(1));
+		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+	}
+
+	@Test
+	public void greater_Nimber_Number() {
+		boolean greater = CGTValue.greater(new Nimber(1), new Number(4));
+		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+
+		greater = CGTValue.greater(new Nimber(1), new Number(-2));
+		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+	}
+	
+	@Test
+	public void greaterEqual_Number_Number() {
+		boolean greaterEqual = CGTValue.greaterEqual(new Number(4), new Number(5));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+
+		greaterEqual = CGTValue.greaterEqual(new Number(5), new Number(4));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+
+		greaterEqual = CGTValue.greaterEqual(new Number(1), new Number(1));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void greaterEqual_Number_Nimber() {
+		boolean greaterEqual = CGTValue.greater(new Number(4), new Nimber(1));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+
+		greaterEqual = CGTValue.greater(new Number(-2), new Nimber(1));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+
+		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	}
+
+	@Test
+	public void greaterEqual_Nimber_Number() {
+		boolean greaterEqual = CGTValue.greater(new Nimber(1), new Number(4));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+
+		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Number(-2));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+
+		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
+		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	}
+
 	@Test
 	public void equal_Number_Number() {
 		boolean equal = new Number(5).equals(new Number(5));
@@ -536,7 +695,7 @@ public class CGTValueTest {
 		equal = new Number(5).equals(new Number(4));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Number_Nimber() {
 		boolean equal = new Number(5).equals(new Nimber(1));
@@ -545,7 +704,7 @@ public class CGTValueTest {
 		equal = new Nimber(1).equals(new Number(5));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Number_Infinitesimal() {
 		boolean equal = new Number(5).equals(new Infinitesimal(1));
@@ -554,7 +713,7 @@ public class CGTValueTest {
 		equal = new Infinitesimal(1).equals(new Number(5));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Nimber_Nimber() {
 		boolean equal = new Nimber(1).equals(new Nimber(1));
@@ -563,7 +722,7 @@ public class CGTValueTest {
 		equal = new Nimber(1).equals(new Nimber(2));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Nimber_Infinitesimal() {
 		boolean equal = new Nimber(1).equals(new Infinitesimal(1));
@@ -572,7 +731,7 @@ public class CGTValueTest {
 		equal = new Infinitesimal(1).equals(new Nimber(2));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Infinitesimal_Infinitesimal() {
 		boolean equal = new Infinitesimal(1).equals(new Infinitesimal(1));
@@ -581,7 +740,7 @@ public class CGTValueTest {
 		equal = new Infinitesimal(1).equals(new Infinitesimal(2));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Number_Switch() {
 		Number first = new Number(2);
@@ -592,7 +751,7 @@ public class CGTValueTest {
 		equal = new Switch(first, second).equals(new Number(1));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Switch_Switch() {
 		Number first = new Number(2);
@@ -602,10 +761,10 @@ public class CGTValueTest {
 
 		first = new Number(2);
 		second = new Number(-6);
-		equal = new Switch(first, second).equals(new Switch(first, second));
+		equal = new Switch(first, second).equals(new Switch(first, new Number(-1)));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Nimber_Switch() {
 		Number first = new Number(2);
@@ -616,7 +775,7 @@ public class CGTValueTest {
 		equal = new Switch(first, second).equals(new Nimber(1));
 		Assert.assertThat(equal, CoreMatchers.equalTo(false));
 	}
-	
+
 	@Test
 	public void equal_Infinitesimal_Switch() {
 		Number first = new Number(2);

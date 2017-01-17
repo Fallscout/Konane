@@ -19,32 +19,33 @@ public class CGTSolver extends Solver {
 	@Override
 	public OutcomeType solve(Board board) {
 
-		CGTValue result = this.calculate(board);
-
-		System.out.println("Result: " + result);
-
-		if (result != null) {
-			Class<? extends CGTValue> resultingClass = result.getClass();
-
-			if (resultingClass == Number.class) {
-				Number number = (Number) result;
-				if (number.getValue() == 0) {
-					return OutcomeType.SECOND;
-				} else if (number.getValue() > 0) {
-					return OutcomeType.BLACK;
-				} else if (number.getValue() < 0) {
-					return OutcomeType.WHITE;
-				}
-			} else if (resultingClass == Nimber.class) {
-				return OutcomeType.FIRST;
-			} else if (resultingClass == Switch.class) {
-				// TODO:
-			} else if (resultingClass == Infinitesimal.class) {
-				// TODO:
-			} else {
-				throw new IllegalStateException("The result class is not supported yet: " + resultingClass);
-			}
-		}
+		// CGTValue result = this.calculate(board);
+		//
+		// System.out.println("Result: " + result);
+		//
+		// if (result != null) {
+		// Class<? extends CGTValue> resultingClass = result.getClass();
+		//
+		// if (resultingClass == Number.class) {
+		// Number number = (Number) result;
+		// if (number.getValue() == 0) {
+		// return OutcomeType.SECOND;
+		// } else if (number.getValue() > 0) {
+		// return OutcomeType.BLACK;
+		// } else if (number.getValue() < 0) {
+		// return OutcomeType.WHITE;
+		// }
+		// } else if (resultingClass == Nimber.class) {
+		// return OutcomeType.FIRST;
+		// } else if (resultingClass == Switch.class) {
+		// // TODO:
+		// } else if (resultingClass == Infinitesimal.class) {
+		// // TODO:
+		// } else {
+		// throw new IllegalStateException("The result class is not supported
+		// yet: " + resultingClass);
+		// }
+		// }
 
 		return null;
 	}
@@ -63,7 +64,7 @@ public class CGTSolver extends Solver {
 		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
 		if (ttEntry != null) {
 			if (ttEntry.getZobristHash() == boardHash) {
-				return ttEntry.getCgtValue();
+				return ttEntry.getLeftValue();
 			}
 		}
 
@@ -107,7 +108,7 @@ public class CGTSolver extends Solver {
 
 		// Get the final outcome and store it in the transposition table
 		cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
-		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, cgtValue);
+		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
 
 		return cgtValue;
 	}

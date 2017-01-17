@@ -205,21 +205,21 @@ public abstract class CGTValue {
 			}
 		}
 
-		String l = "";
-		if(leftValue == null) {
-			l = "null";
-		} else {
-			l = leftValue.toString();
-		}
-		
-		String r = "";
-		if(rightValue == null) {
-			r = "null";
-		} else {
-			r = rightValue.toString();
-		}
-		
-		System.err.println("Could not combine {" + l + "|" + r +"}");
+//		String l = "";
+//		if(leftValue == null) {
+//			l = "null";
+//		} else {
+//			l = leftValue.toString();
+//		}
+//		
+//		String r = "";
+//		if(rightValue == null) {
+//			r = "null";
+//		} else {
+//			r = rightValue.toString();
+//		}
+//		
+//		System.err.println("Could not combine {" + l + "|" + r +"}");
 		
 		// If value cannot be simplified, return nothing and carry on with
 		// Alpha-Beta-Search
@@ -279,14 +279,18 @@ public abstract class CGTValue {
 				if (blackTurn) {
 					if (first.getValue() >= 0) {
 						return first;
-					} else {
+					} else if (second.isPositive()) {
 						return second;
+					} else {
+						return first;
 					}
 				} else {
 					if (first.getValue() <= 0) {
 						return first;
-					} else {
+					} else if (second.isNegative()) {
 						return second;
+					} else {
+						return first;
 					}
 				}
 			} else if (secondValue instanceof Infinitesimal) {
@@ -369,26 +373,30 @@ public abstract class CGTValue {
 			}
 		} else if (firstValue instanceof Switch) {
 			Switch first = (Switch)firstValue;
-			
+
 			if (secondValue instanceof Number) {
 				Number second = (Number)secondValue;
-				
+
 				if(blackTurn) {
-					if(second.getValue() >= 0) {
+					if (second.getValue() >= 0) {
 						return second;
-					} else {
+					} else if (first.isPositive()) {
 						return first;
+					} else {
+						return second;
 					}
 				} else {
-					if(second.getValue() <= 0) {
+					if (second.getValue() <= 0) {
 						return second;
-					} else {
+					} else if (first.isNegative()) {
 						return first;
+					} else {
+						return second;
 					}
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.isPositive()) {
 						return first;
@@ -437,10 +445,10 @@ public abstract class CGTValue {
 			}
 		} else if (firstValue instanceof Infinitesimal) {
 			Infinitesimal first = (Infinitesimal)firstValue;
-			
+
 			if (secondValue instanceof Number) {
 				Number second = (Number)secondValue;
-				
+
 				if(blackTurn) {
 					if(second.getValue() >= 0) {
 						return second;
@@ -456,7 +464,7 @@ public abstract class CGTValue {
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.getValue() > 0) {
 						return first;
@@ -488,7 +496,7 @@ public abstract class CGTValue {
 				}
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal)secondValue;
-				
+
 				if(blackTurn) {
 					if(first.getValue() >= second.getValue()) {
 						return first;

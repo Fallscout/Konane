@@ -1,6 +1,5 @@
 package engine;
 
-import java.lang.*;
 import java.security.InvalidParameterException;
 
 public class Switch extends CGTValue {
@@ -29,11 +28,11 @@ public class Switch extends CGTValue {
     }
     
     public boolean isNegative() {
-    	return this.left.getValue() < 0 && this.right.getValue() < 0;
+        return this.left.getValue() < 0 && this.right.getValue() <= 0;
     }
     
     public boolean isPositive() {
-    	return this.left.getValue() > 0 && this.right.getValue() > 0;
+        return this.left.getValue() >= 0 && this.right.getValue() > 0;
     }
     
     public boolean isNimber() {

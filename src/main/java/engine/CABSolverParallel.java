@@ -1,69 +1,73 @@
 //package engine;
 //
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.concurrent.Callable;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
-//import java.util.concurrent.Future;
-//import java.util.concurrent.TimeUnit;
-//
 //import game.Board;
 //import game.Move;
 //
-//public class CABSolverParallel extends Solver {
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.List;
+//import java.util.concurrent.*;
+//
+//public class CABSolverParallel extends Solver{
 //
 //	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 //	private final CGTSolver cgtSolver = new CGTSolver();
 //	private final ExecutorService executor = Executors.newFixedThreadPool(4);
 //
+//	private int counter = 0;
+//	private int counterTT = 0;
+//
 //	public OutcomeType solve(Board board) {
+//
+//
 //		CGTValue blackOutcome = new Number(-100);
 //		CGTValue whiteOutcome = new Number(100);
-//
 //		try {
-//			List<Callable<CGTValue>> blackMoveTasks = new ArrayList<>();
-//			List<Callable<CGTValue>> whiteMoveTasks = new ArrayList<>();
+//		List<Callable<CGTValue>> blackMoveTasks = new ArrayList<>();
+//		List<Callable<CGTValue>> whiteMoveTasks = new ArrayList<>();
 //
-//			List<Move> blackMoves = board.getLeftOptions();
-//			for (Move move : blackMoves) {
-//				Callable<CGTValue> callable = () -> {
-//					Board innerBoard = new Board(board);
-//					innerBoard.executeMove(move);
-//					return solve(innerBoard, false, new Number(-100), new Number(100), 1);
-//				};
-//				blackMoveTasks.add(callable);
-//			}
+//		List<Move> blackMoves = board.getLeftOptions();
+//		for (Move move : blackMoves) {
+//			Callable<CGTValue> callable = () -> {
+//				Board innerBoard = new Board(board);
+//				innerBoard.executeMove(move);
+//				return solve(innerBoard, false, new Number(-100), new Number(100), 1);
+//			};
+//			blackMoveTasks.add(callable);
+//		}
 //
-//			List<Move> whiteMoves = board.getRightOptions();
-//			for (Move move : whiteMoves) {
-//				Callable<CGTValue> callable = () -> {
-//					Board innerBoard = new Board(board);
-//					innerBoard.executeMove(move);
-//					return solve(innerBoard, true, new Number(-100), new Number(100), 1);
-//				};
-//				whiteMoveTasks.add(callable);
-//			}
+//		List<Move> whiteMoves = board.getRightOptions();
+//		for (Move move : whiteMoves) {
+//			Callable<CGTValue> callable = () -> {
+//				Board innerBoard = new Board(board);
+//				innerBoard.executeMove(move);
+//				return solve(innerBoard, true, new Number(-100), new Number(100), 1);
+//			};
+//			whiteMoveTasks.add(callable);
+//		}
 //
-//			List<Future<CGTValue>> blackOutcomes = executor.invokeAll(blackMoveTasks);
-//			List<Future<CGTValue>> whiteOutcomes = executor.invokeAll(whiteMoveTasks);
+//		List<Future<CGTValue>> blackOutcomes = executor.invokeAll(blackMoveTasks);
+//		List<Future<CGTValue>> whiteOutcomes = executor.invokeAll(whiteMoveTasks);
 //
-//			for (Future<CGTValue> singleBlackOutcome : blackOutcomes) {
-//				CGTValue cgtValue = singleBlackOutcome.get();
-//				blackOutcome = CGTValue.max(cgtValue, blackOutcome, true);
-//			}
+//		for (Future<CGTValue> singleBlackOutcome : blackOutcomes) {
+//			CGTValue cgtValue = singleBlackOutcome.get();
+//			blackOutcome = CGTValue.max(cgtValue, blackOutcome, true);
+//		}
 //
-//			for (Future<CGTValue> singleWhiteOutcome : whiteOutcomes) {
-//				CGTValue cgtValue = singleWhiteOutcome.get();
-//				whiteOutcome = CGTValue.max(cgtValue, whiteOutcome, false);
-//			}
+//		for (Future<CGTValue> singleWhiteOutcome : whiteOutcomes) {
+//			CGTValue cgtValue = singleWhiteOutcome.get();
+//			whiteOutcome = CGTValue.max(cgtValue, whiteOutcome, false);
+//		}
 //
-//			System.out.println("AB-CGT solver:");
-//			System.out.println("Node counter: " + counter);
-//			System.out.println("Nodes looked up in TT: " + counterTT);
-//		} catch (Exception e) {
+//		System.out.println("AB-CGT solver:");
+//		System.out.println("Nodes looked up in TT: " + counterTT);
+//		System.out.println("Node counter: " + counter);
+//		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
+//		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
+//
+//		}catch (Exception e){
 //			e.printStackTrace();
-//		} finally {
+//		}finally {
 //			this.shutdown();
 //		}
 //		return determineWinner(blackOutcome, whiteOutcome);
@@ -81,14 +85,18 @@
 //		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
 //		if (ttEntry != null) {
 //			if (ttEntry.getZobristHash() == boardHash) {
-//				counterTT++;
-//				return ttEntry.getCgtValue();
+//				if (blackTurn && ttEntry.getLeftValue() != null) {
+//					return ttEntry.getLeftValue();
+//				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+//					return ttEntry.getRightValue();
+//				}
+//			} else {
+//				ttEntry = null;
 //			}
 //		}
+//
 //		counter++;
 //		CGTValue returnValue = null;
-//		Move bestLeftOption = null;
-//		Move bestRightOption = null;
 //
 //		List<Move> availableMoves;
 //		if (blackTurn) {
@@ -130,7 +138,6 @@
 //
 //					if (CGTValue.greater(returnValue, alpha)) {
 //						alpha = returnValue;
-//						bestLeftOption = move;
 //					}
 //					if (CGTValue.lessEqual(beta, alpha)) {
 //						break;
@@ -149,7 +156,6 @@
 //
 //					if (CGTValue.less(returnValue, beta)) {
 //						beta = returnValue;
-//						bestRightOption = move;
 //					}
 //					if (CGTValue.lessEqual(beta, alpha)) {
 //						break;
@@ -158,7 +164,19 @@
 //			}
 //		}
 //
-//		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, bestLeftOption, bestRightOption, returnValue);
+//		if (ttEntry == null) {
+//			if (blackTurn) {
+//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+//			} else {
+//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+//			}
+//		} else {
+//			if (blackTurn) {
+//				ttEntry.setLeftValue(returnValue);
+//			} else {
+//				ttEntry.setRightValue(returnValue);
+//			}
+//		}
 //
 //		return returnValue;
 //	}
@@ -253,7 +271,7 @@
 //				}
 //			}
 //		} else if (blackOutcome instanceof Nimber) {
-//			// Nimber black = (Nimber) blackOutcome;
+////			Nimber black = (Nimber) blackOutcome;
 //
 //			if (whiteOutcome instanceof Number) {
 //				Number white = (Number) whiteOutcome;
@@ -385,47 +403,47 @@
 //
 //			if (whiteOutcome instanceof Number) {
 //				Number white = (Number) whiteOutcome;
-//
-//				if (white.getValue() > 0) {
-//					if (black.getValue() > 0) {
+//				
+//				if(white.getValue() > 0) {
+//					if(black.getValue() > 0) {
 //						return OutcomeType.BLACK;
 //					} else {
 //						return OutcomeType.SECOND;
 //					}
 //				}
-//
-//				if (white.getValue() <= 0) {
-//					if (black.getValue() > 0) {
+//				
+//				if(white.getValue() <= 0) {
+//					if(black.getValue() > 0) {
 //						return OutcomeType.FIRST;
 //					} else {
 //						return OutcomeType.WHITE;
 //					}
 //				}
 //			} else if (whiteOutcome instanceof Nimber) {
-//				// Nimber white = (Nimber) whiteOutcome;
-//
-//				if (black.getValue() > 0) {
+////				Nimber white = (Nimber) whiteOutcome;
+//				
+//				if(black.getValue() > 0) {
 //					return OutcomeType.BLACK;
 //				} else {
 //					return OutcomeType.SECOND;
 //				}
 //			} else if (whiteOutcome instanceof Switch) {
 //				Switch white = (Switch) whiteOutcome;
-//
-//				if (white.isNegative()) {
-//					if (black.getValue() > 0) {
+//				
+//				if(white.isNegative()) {
+//					if(black.getValue() > 0) {
 //						return OutcomeType.FIRST;
 //					} else {
 //						return OutcomeType.WHITE;
 //					}
-//				} else if (white.isPositive()) {
-//					if (black.getValue() > 0) {
+//				} else if(white.isPositive()) {
+//					if(black.getValue() > 0) {
 //						return OutcomeType.BLACK;
 //					} else {
 //						return OutcomeType.SECOND;
 //					}
-//				} else if (white.isNimber()) {
-//					if (black.getValue() > 0) {
+//				} else if(white.isNimber()) {
+//					if(black.getValue() > 0) {
 //						return OutcomeType.BLACK;
 //					} else {
 //						return OutcomeType.SECOND;
@@ -433,15 +451,15 @@
 //				}
 //			} else if (whiteOutcome instanceof Infinitesimal) {
 //				Infinitesimal white = (Infinitesimal) whiteOutcome;
-//
-//				if (black.getValue() > 0) {
-//					if (white.getValue() > 0) {
+//				
+//				if(black.getValue() > 0) {
+//					if(white.getValue() > 0) {
 //						return OutcomeType.BLACK;
 //					} else {
 //						return OutcomeType.FIRST;
 //					}
 //				} else {
-//					if (white.getValue() > 0) {
+//					if(white.getValue() > 0) {
 //						return OutcomeType.SECOND;
 //					} else {
 //						return OutcomeType.WHITE;
