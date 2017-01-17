@@ -1,0 +1,30 @@
+Solving Combinatorial Games using Combinatorial Game Theory: The Game of Konane
+(front picture Konane.png, image Description 'Konane, the ancient Hawaiian stone-jumping game' and image caption 'The Game of Konane')
+(first line, 18 pt, name student(s)) Christoph Emunds, Florian Krebs, Tobias Moers, Dominik Nerger
+Course: Master AI research project
+Supervisor: Jos Uiterwijk
+ 
+Abstract: Combinatorial games are games that do not include uncertainty, in which both players must have perfect information, the game must always end and there are no draws possible. The player with the last legal move wins. The game of Konane, an ancient Hawaiian stone-jumping game, fulfills these conditions and can therefore be classified as a combinatorial game. These types of games give rise to a special kind of game theory, called Combinatorial Game Theory (CGT). CGT allows to calculate values more detailed for game positions instead of just a win or loss.
+
+Searching the game space for solutions is often accomplished through the Alpha-Beta algorithm. Naturally, an Alpha-Beta solver is only able to determine if a certain player will win or lose. Adjustments to this search are necessary to be able to categorize the game position into one of the four possible outcome classes. The Alpha-Beta search can be enhanced with concepts from CGT to be made more efficient. This combined solver, which is named Combinatorial Alpha-Beta solver, uses the values calculated by CGT to reduce the amount of search needed. This combined solver searches less nodes to find the outcome type of a certain board position.
+
+Research questions/hypotheses:
+Which changes are necessary in an Alpha-Beta solver to categorize games into one of the four outcome classes?
+How can values for game positions be determined?
+How can an Alpha-Beta solver make use of Combinatorial Game Theory
+Is pruning in a combinatorial game tree still possible?
+Is the approach of combining Alpha-Beta search and CGT efficient?
+
+Main outcomes:
+The combinatorial Alpha-Beta solver searches less nodes to find the same result as the standard Alpha-Beta solver.
+The calculation of the combinatorial game values has proven to be difficult, because several types of values are incomparable to each other.
+
+Relevant literature: Winning Ways for Your Mathematical Plays, Lessons in Play, On Numbers and Games
+
+Keywords, links: Combinatorial Game Theory, Alpha-Beta Pruning
+
+Downloads: 
+Slides first phase presentation: pp1.pdf
+Slides second phase presentation: pp2.pdf
+Slides Master Project Seminar January 27, 2017: in preparation
+Research report: in preparation
