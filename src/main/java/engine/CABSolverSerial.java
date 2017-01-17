@@ -70,19 +70,19 @@ public class CABSolverSerial extends Solver {
 
 	private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
 		// Lookup in TT
-//		long boardHash = board.getZobristHash();
-//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-//		if (ttEntry != null) {
-//			if (ttEntry.getZobristHash() == boardHash) {
-//				if (blackTurn && ttEntry.getLeftValue() != null) {
-//					return ttEntry.getLeftValue();
-//				} else if (!blackTurn && ttEntry.getRightValue() != null) {
-//					return ttEntry.getRightValue();
-//				}
-//			} else {
-//				ttEntry = null;
-//			}
-//		}
+		long boardHash = board.getZobristHash();
+		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+		if (ttEntry != null) {
+			if (ttEntry.getZobristHash() == boardHash) {
+				if (blackTurn && ttEntry.getLeftValue() != null) {
+					return ttEntry.getLeftValue();
+				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+					return ttEntry.getRightValue();
+				}
+			} else {
+				ttEntry = null;
+			}
+		}
 		
 		counter++;
 		CGTValue returnValue = null;
@@ -173,19 +173,19 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
-//		if (ttEntry == null) {
-//			if (blackTurn) {
-//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
-//			} else {
-//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
-//			}
-//		} else {
-//			if (blackTurn) {
-//				ttEntry.setLeftValue(returnValue);
-//			} else {
-//				ttEntry.setRightValue(returnValue);
-//			}
-//		}
+		if (ttEntry == null) {
+			if (blackTurn) {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+			} else {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+			}
+		} else {
+			if (blackTurn) {
+				ttEntry.setLeftValue(returnValue);
+			} else {
+				ttEntry.setRightValue(returnValue);
+			}
+		}
 
 		return returnValue;
 	}
