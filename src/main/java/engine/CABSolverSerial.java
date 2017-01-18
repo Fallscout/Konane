@@ -39,7 +39,7 @@ public class CABSolverSerial extends Solver {
 			value = solve(board, false, new Number(-10), new Number(10), 1);
 			board.revertMove(move);
 			blackOutcome = CGTValue.max(value, blackOutcome, true);
-			if(CGTValue.max(blackOutcome, ZERO, true).equals(blackOutcome) || blackOutcome.equals(ZERO)) {
+			if( blackOutcome.equals(ZERO) || CGTValue.max(blackOutcome, ZERO, true).equals(blackOutcome)) {
 				break;
 			}
 		}
@@ -50,7 +50,7 @@ public class CABSolverSerial extends Solver {
 			value = solve(board, true, new Number(-10), new Number(10), 1);
 			board.revertMove(move);
 			whiteOutcome = CGTValue.max(value, whiteOutcome, false);
-			if(CGTValue.max(whiteOutcome, ZERO, false).equals(whiteOutcome) || whiteOutcome.equals(ZERO)) {
+			if(whiteOutcome.equals(ZERO) || CGTValue.max(whiteOutcome, ZERO, false).equals(whiteOutcome) ) {
 				break;
 			}
 		}
@@ -213,7 +213,7 @@ public class CABSolverSerial extends Solver {
 			} else if (whiteOutcome instanceof Nimber) {
 				// Nimber white = (Nimber)whiteOutcome;
 
-				if (black.getValue() > 0) {
+				if (black.getValue() >= 0) {
 					return OutcomeType.BLACK;
 				}
 
@@ -221,9 +221,6 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.SECOND;
 				}
 
-				if (black.getValue() == 0) {
-					return OutcomeType.BLACK;
-				}
 
 			} else if (whiteOutcome instanceof Switch) {
 				Switch white = (Switch) whiteOutcome;

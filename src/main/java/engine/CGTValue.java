@@ -7,6 +7,13 @@ public abstract class CGTValue {
 	public abstract boolean equals(Object object);
 
 	// TODO: https://github.com/Fallscout/Konane/issues/2
+
+	/**Combines the left and right CGTValues of a board position to one simplified CGTValue.
+	 *
+	 * @param leftValue
+	 * @param rightValue
+	 * @return
+	 */
 	public static CGTValue combine(CGTValue leftValue, CGTValue rightValue) {
 		if (leftValue == null && rightValue == null) {
 			// Berlekamp et al., p. 39
@@ -226,6 +233,13 @@ public abstract class CGTValue {
 		return null;
 	}
 
+	/**Returns the best CGTvalue for the current player, indicated by the boolean blackTurn
+	 *
+	 * @param firstValue
+	 * @param secondValue
+	 * @param blackTurn
+	 * @return
+	 */
 	public static CGTValue max(CGTValue firstValue, CGTValue secondValue, boolean blackTurn) {
 
 		if (firstValue == null) {
@@ -516,6 +530,12 @@ public abstract class CGTValue {
 		throw new IllegalArgumentException("Cannot compare given values.");
 	}
 
+	/**Returns whether the first CGTValue is less than or equal to the second CGTValue.
+	 *
+	 * @param first
+	 * @param second
+	 * @return
+	 */
 	public static boolean lessEqual(CGTValue first, CGTValue second) {
 		if(first == null) {
 			return false;
@@ -524,12 +544,20 @@ public abstract class CGTValue {
 		if(second == null) {
 			return true;
 		}
-		
+		if (first.equals(second)) {
+			return true;
+		}
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return (outcomeBlack == second && outcomeWhite == first) || first.equals(second);
+		return (outcomeBlack == second && outcomeWhite == first);
 	}
 
+	/**Returns whether the first CGTValue is less than the second CGTValue
+	 *
+	 * @param first
+	 * @param second
+	 * @return
+	 */
 	public static boolean less(CGTValue first, CGTValue second) {
 		if(first == null) {
 			return false;
@@ -544,6 +572,12 @@ public abstract class CGTValue {
 		return outcomeBlack == second && outcomeWhite == first && !first.equals(second);
 	}
 
+	/**Returns whether the first CGTValue is greater than or equal to the second CGTValue.
+	 *
+	 * @param first
+	 * @param second
+	 * @return
+	 */
 	public static boolean greaterEqual(CGTValue first, CGTValue second) {
 		if(first == null) {
 			return false;
@@ -552,12 +586,20 @@ public abstract class CGTValue {
 		if(second == null) {
 			return true;
 		}
-		
+		if (first.equals(second)) {
+			return true;
+		}
 		CGTValue outcomeBlack = CGTValue.max(first, second, true);
 		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return (outcomeBlack == first && outcomeWhite == second) || first.equals(second);
+		return (outcomeBlack == first && outcomeWhite == second);
 	}
 
+	/**Returns whether the first CGTValue is greater than the second CGTValue.
+	 *
+	 * @param first
+	 * @param second
+	 * @return
+	 */
 	public static boolean greater(CGTValue first, CGTValue second) {
 		if(first == null) {
 			return false;
