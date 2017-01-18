@@ -280,13 +280,10 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.SECOND;
 				}
 
-				if (white.getValue() < 0) {
+				if (white.getValue() <= 0) {
 					return OutcomeType.WHITE;
 				}
 
-				if (white.getValue() == 0) {
-					return OutcomeType.WHITE;
-				}
 
 			} else if (whiteOutcome instanceof Nimber) {
 				// Nimber white = (Nimber)whiteOutcome;
