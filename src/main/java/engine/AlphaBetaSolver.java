@@ -7,7 +7,7 @@ import game.Move;
 
 public class AlphaBetaSolver extends Solver {
 
-	private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int)Math.pow(2, 24)];
+    private final TTEntry<Integer>[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 
 	private int cutoff;
 
@@ -38,7 +38,7 @@ public class AlphaBetaSolver extends Solver {
 	private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
         // Lookup in TT
         long boardHash = board.getZobristHash();
-        SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+        TTEntry<Integer> ttEntry = tTable[getIndexOfHash(boardHash)];
         if (ttEntry != null) {
             if (ttEntry.getZobristHash() == boardHash) {
                 if (blackTurn && ttEntry.getLeftValue() != null) {
@@ -69,37 +69,35 @@ public class AlphaBetaSolver extends Solver {
             orderMoves(availableMoves, board, blackTurn);
         }
 
-		int value;
-
 		if (returnValue == 0) {
             returnValue = -100;
             for (Move move : availableMoves) {
-					board.executeMove(move);
-                    value = -solve(board, !blackTurn, -beta, -alpha, ply + 1);
+                board.executeMove(move);
+                int value = -solve(board, !blackTurn, -beta, -alpha, ply + 1);
                 board.revertMove(move);
 
-					if (value > returnValue) {
-						returnValue = value;
-					}
-					if (returnValue > alpha) {
-						alpha = returnValue;
-					}
-                    if (alpha >= beta) {
-                        cutoff++;
-						break;
-					}
-                    if (returnValue == 1) {
-                        cutoff++;
-						break;
-					}
-				}
-			}
+                if (value > returnValue) {
+                    returnValue = value;
+                }
+                if (returnValue > alpha) {
+                    alpha = returnValue;
+                }
+                if (alpha >= beta) {
+                    cutoff++;
+                    break;
+                }
+                if (returnValue == 1) {
+                    cutoff++;
+                    break;
+                }
+            }
+        }
 
         if (ttEntry == null) {
             if (blackTurn) {
-                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, returnValue, null);
+                tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, returnValue, null);
             } else {
-                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, null, returnValue);
+                tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, null, returnValue);
             }
         } else {
             if (blackTurn) {

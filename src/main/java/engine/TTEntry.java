@@ -1,31 +1,29 @@
 package engine;
 
-import game.Move;
-
-public class TTEntry {
+public class TTEntry<T> {
     private final long zobristHash;
-    private CGTValue leftValue;
-    private CGTValue rightValue;
+    private T leftValue;
+    private T rightValue;
 
-    public TTEntry(long zobristHash, CGTValue leftValue, CGTValue rightValue) {
+    public TTEntry(long zobristHash, T leftValue, T rightValue) {
         this.zobristHash = zobristHash;
         this.leftValue = leftValue;
         this.rightValue = rightValue;
     }
 
-    public CGTValue getLeftValue() {
+    public T getLeftValue() {
         return leftValue;
     }
 
-    public void setLeftValue(CGTValue leftValue) {
+    public void setLeftValue(T leftValue) {
         this.leftValue = leftValue;
     }
 
-    public CGTValue getRightValue() {
+    public T getRightValue() {
         return rightValue;
     }
 
-    public void setRightValue(CGTValue rightValue) {
+    public void setRightValue(T rightValue) {
         this.rightValue = rightValue;
     }
 

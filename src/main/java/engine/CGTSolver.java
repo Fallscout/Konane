@@ -7,7 +7,7 @@ import game.Move;
 
 public class CGTSolver extends Solver {
 
-	private final TTEntry[] tTable = new TTEntry[(int) Math.pow(2, 24)];
+	private final TTEntry<CGTValue>[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 
 	/**
 	 * Solves a given board and returns the {@link OutcomeType}
@@ -61,7 +61,7 @@ public class CGTSolver extends Solver {
 	public CGTValue calculate(Board board) {
 		// Lookup in TT
 		long boardHash = board.getZobristHash();
-		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+		TTEntry<CGTValue> ttEntry = tTable[getIndexOfHash(boardHash)];
 		if (ttEntry != null) {
 			if (ttEntry.getZobristHash() == boardHash) {
 				counterTT++;
@@ -104,7 +104,7 @@ public class CGTSolver extends Solver {
 
 		// Get the final outcome and store it in the transposition table
 		CGTValue cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
-		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
+		tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, cgtValue, null);
 
 		return cgtValue;
 	}

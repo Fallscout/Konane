@@ -10,7 +10,7 @@ import game.Piece;
 
 public class CABSolverSerial extends Solver {
 
-	private final TTEntry[] tTable = new TTEntry[(int)Math.pow(2, 24)];
+	private final TTEntry<CGTValue>[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 	private final CGTSolver cgtSolver = new CGTSolver();
 	private final CGTValue ZERO = new Number(0);
 
@@ -51,22 +51,22 @@ public class CABSolverSerial extends Solver {
 	}
 
 	private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
-		//		// Lookup in TT
-		//		long boardHash = board.getZobristHash();
-		//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-		//		if (ttEntry != null) {
-		//			if (ttEntry.getZobristHash() == boardHash) {
-		//				if (blackTurn && ttEntry.getLeftValue() != null) {
-		//					counterTT++;
-		//					return ttEntry.getLeftValue();
-		//				} else if (!blackTurn && ttEntry.getRightValue() != null) {
-		//					counterTT++;
-		//					return ttEntry.getRightValue();
-		//				}
-		//			} else {
-		//				ttEntry = null;
-		//			}
-		//		}
+		// Lookup in TT
+		long boardHash = board.getZobristHash();
+		TTEntry<CGTValue> ttEntry = tTable[getIndexOfHash(boardHash)];
+		if (ttEntry != null) {
+			if (ttEntry.getZobristHash() == boardHash) {
+				if (blackTurn && ttEntry.getLeftValue() != null) {
+					counterTT++;
+					return ttEntry.getLeftValue();
+				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+					counterTT++;
+					return ttEntry.getRightValue();
+				}
+			} else {
+				ttEntry = null;
+			}
+		}
 		
 		counter++;
 		CGTValue returnValue = null;
@@ -162,19 +162,25 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
-		//		if (ttEntry == null) {
-		//			if (blackTurn) {
-		//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
-		//			} else {
-		//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
-		//			}
-		//		} else {
-		//			if (blackTurn) {
-		//				ttEntry.setLeftValue(returnValue);
-		//			} else {
-		//				ttEntry.setRightValue(returnValue);
-		//			}
-		//		}
+		if (returnValue.equals(new Number(0))) {
+			returnValue = new Nimber(1);
+		} else if (returnValue instanceof Nimber) {
+			returnValue = new Number(0);
+		}
+
+		if (ttEntry == null) {
+			if (blackTurn) {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, returnValue, null);
+			} else {
+				tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, null, returnValue);
+			}
+		} else {
+			if (blackTurn) {
+				ttEntry.setLeftValue(returnValue);
+			} else {
+				ttEntry.setRightValue(returnValue);
+			}
+		}
 
 		return returnValue;
 	}
