@@ -59,23 +59,21 @@ public class CGTSolver extends Solver {
 	 */
 	// TODO: https://github.com/Fallscout/Konane/issues/3
 	public CGTValue calculate(Board board) {
-		//		// Lookup in TT
-		//		long boardHash = board.getZobristHash();
-		//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-		//		if (ttEntry != null) {
-		//			if (ttEntry.getZobristHash() == boardHash) {
-		//				counterTT++;
-		//				return ttEntry.getLeftValue();
-		//			}
-		//		}
+		// Lookup in TT
+		long boardHash = board.getZobristHash();
+		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+		if (ttEntry != null) {
+			if (ttEntry.getZobristHash() == boardHash) {
+				counterTT++;
+				return ttEntry.getLeftValue();
+			}
+		}
 
 		counter++;
 
 		// Get the possible options of both players
 		List<Move> leftOptions = board.getLeftOptions();
 		List<Move> rightOptions = board.getRightOptions();
-
-		CGTValue cgtValue;
 
 		CGTValue leftOutcome = null;
 		CGTValue rightOutcome = null;
@@ -99,27 +97,16 @@ public class CGTSolver extends Solver {
 			board.revertMove(option);
 
 			CGTValue max = CGTValue.max(value, rightOutcome, false);
-			if (max != leftOutcome) {
+			if (max != rightOutcome) {
 				rightOutcome = max;
 			}
 		}
 
 		// Get the final outcome and store it in the transposition table
-		cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
-		//		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
+		CGTValue cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
+		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
 
 		return cgtValue;
-	}
-
-	/**
-	 * This method returns the primary hash code by using a bit mask
-	 * 
-	 * @param zobristHash
-	 *            The complete hash
-	 * @return the primary hash code
-	 */
-	private int getIndexOfHash(long zobristHash) {
-		return (int) Math.abs(zobristHash & 0xFFFFFF);
 	}
 
 	@Override public void printCounter() {

@@ -33,6 +33,16 @@ public abstract class Solver {
 
 	public abstract void resetCounter();
 
+	/**
+	 * This method returns the primary hash code by using a bit mask
+	 *
+	 * @param zobristHash The complete hash
+	 * @return the primary hash code
+	 */
+	protected int getIndexOfHash(long zobristHash) {
+		return (int) Math.abs(zobristHash & 0xFFFFFF);
+	}
+
 	protected void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
 		int[] possibleOpponentsMoves = new int[moves.size()];
 		for (int i = 0; i < moves.size(); i++) {
