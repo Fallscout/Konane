@@ -9,8 +9,8 @@ import game.Move;
 
 public abstract class Solver {
 
-    protected int counter;
-    protected int counterTT;
+	protected long counter;
+	protected long counterTT;
 
     public abstract OutcomeType solve(Board board);
 
@@ -21,16 +21,18 @@ public abstract class Solver {
         return result;
     }
 
-    public int getCounter() {
-        return counter;
+	public long getCounter() {
+		return counter;
     }
 
-    public int getCounterTT() {
-        return counterTT;
+	public long getCounterTT() {
+		return counterTT;
     }
 
     public abstract void printCounter();
-    
+
+	public abstract void resetCounter();
+
 	protected void orderMoves(List<Move> moves, Board board, boolean blacksMove) {
 		int[] possibleOpponentsMoves = new int[moves.size()];
 		for (int i = 0; i < moves.size(); i++) {

@@ -59,23 +59,23 @@ public class CGTSolver extends Solver {
 	 */
 	// TODO: https://github.com/Fallscout/Konane/issues/3
 	public CGTValue calculate(Board board) {
-		// Lookup in TT
-		long boardHash = board.getZobristHash();
-		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-		if (ttEntry != null) {
-			if (ttEntry.getZobristHash() == boardHash) {
-				return ttEntry.getLeftValue();
-			}
-		}
+		//		// Lookup in TT
+		//		long boardHash = board.getZobristHash();
+		//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+		//		if (ttEntry != null) {
+		//			if (ttEntry.getZobristHash() == boardHash) {
+		//				counterTT++;
+		//				return ttEntry.getLeftValue();
+		//			}
+		//		}
+
+		counter++;
 
 		// Get the possible options of both players
 		List<Move> leftOptions = board.getLeftOptions();
 		List<Move> rightOptions = board.getRightOptions();
 
 		CGTValue cgtValue;
-
-		Move bestLeftOption = null;
-		Move bestRightOption = null;
 
 		CGTValue leftOutcome = null;
 		CGTValue rightOutcome = null;
@@ -88,7 +88,6 @@ public class CGTSolver extends Solver {
 
 			CGTValue max = CGTValue.max(value, leftOutcome, true);
 			if (max != leftOutcome) {
-				bestLeftOption = option;
 				leftOutcome = max;
 			}
 		}
@@ -101,14 +100,13 @@ public class CGTSolver extends Solver {
 
 			CGTValue max = CGTValue.max(value, rightOutcome, false);
 			if (max != leftOutcome) {
-				bestRightOption = option;
 				rightOutcome = max;
 			}
 		}
 
 		// Get the final outcome and store it in the transposition table
 		cgtValue = CGTValue.combine(leftOutcome, rightOutcome);
-		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
+		//		tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, cgtValue, null);
 
 		return cgtValue;
 	}
@@ -124,8 +122,14 @@ public class CGTSolver extends Solver {
 		return (int) Math.abs(zobristHash & 0xFFFFFF);
 	}
 
-	@Override
-	public void printCounter() {
+	@Override public void printCounter() {
+		System.out.println(CGTSolver.class.getSimpleName());
+		System.out.println("Nodes searched: " + counter);
+		System.out.println("Nodes found in TT: " + counterTT);
+	}
 
+	@Override public void resetCounter() {
+		counter = 0;
+		counterTT = 0;
 	}
 }

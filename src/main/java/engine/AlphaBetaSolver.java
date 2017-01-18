@@ -9,9 +9,8 @@ public class AlphaBetaSolver extends Solver {
 
 	private final SimpleTTEntry[] tTable = new SimpleTTEntry[(int)Math.pow(2, 24)];
 
-	private int counter;
 	private int cutoff;
-	
+
 	@Override
 	public OutcomeType solve(Board board) {
 		this.counter = 0;
@@ -19,7 +18,7 @@ public class AlphaBetaSolver extends Solver {
 
 		int blackOutcome = -1;
 		int whiteOutcome = 1;
-		
+
 		int value;
 
 		List<Move> blackMoves = board.getLeftOptions();
@@ -27,7 +26,7 @@ public class AlphaBetaSolver extends Solver {
 			board.executeMove(move);
 			value = solve(board, false, -10, 10, 1);
 			board.revertMove(move);
-			
+
 			blackOutcome = Math.max(value, blackOutcome);
 			if (blackOutcome == 1) {
 				break;
@@ -39,17 +38,15 @@ public class AlphaBetaSolver extends Solver {
 			board.executeMove(move);
 			value = solve(board, true, -10, 10, 1);
 			board.revertMove(move);
-			
+
 			whiteOutcome = Math.min(value, whiteOutcome);
 			if (whiteOutcome == -1) {
 				break;
 			}
 		}
 
-		System.out.println("Alpha-Beta solver:");
-		System.out.println("Node counter: " + counter);
-		System.out.println("Cutoffs: " + cutoff);
-		System.out.println("Nodes looked up in TT: " + counterTT);
+        printCounter();
+        resetCounter();
 
 		if (blackOutcome == 1 && whiteOutcome == -1) {
 			return OutcomeType.FIRST;
@@ -65,20 +62,22 @@ public class AlphaBetaSolver extends Solver {
 	}
 
 	private int solve(Board board, boolean blackTurn, int alpha, int beta, int ply) {
-		// Lookup in TT
-        long boardHash = board.getZobristHash();
-        SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-        if (ttEntry != null) {
-            if (ttEntry.getZobristHash() == boardHash) {
-                if (blackTurn && ttEntry.getLeftValue() != null) {
-                    return ttEntry.getLeftValue();
-                } else if (!blackTurn && ttEntry.getRightValue() != null) {
-                    return ttEntry.getRightValue();
-                }
-            } else {
-                ttEntry = null;
-            }
-        }
+        //		// Lookup in TT
+        //        long boardHash = board.getZobristHash();
+        //        SimpleTTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+        //        if (ttEntry != null) {
+        //            if (ttEntry.getZobristHash() == boardHash) {
+        //                if (blackTurn && ttEntry.getLeftValue() != null) {
+        //                	counterTT++;
+        //                    return ttEntry.getLeftValue();
+        //                } else if (!blackTurn && ttEntry.getRightValue() != null) {
+        //                	counterTT++;
+        //                    return ttEntry.getRightValue();
+        //                }
+        //            } else {
+        //                ttEntry = null;
+        //            }
+        //        }
 
 		counter++;
 		int returnValue = 0;
@@ -142,20 +141,20 @@ public class AlphaBetaSolver extends Solver {
 			}
 		}
 
-        if (ttEntry == null) {
-            if (blackTurn) {
-                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, returnValue, null);
-            } else {
-                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, null, returnValue);
-            }
-        } else {
-            if (blackTurn) {
-                ttEntry.setLeftValue(returnValue);
-            } else {
-                ttEntry.setRightValue(returnValue);
-            }
-        }
-		return returnValue;
+        //        if (ttEntry == null) {
+        //            if (blackTurn) {
+        //                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, returnValue, null);
+        //            } else {
+        //                tTable[getIndexOfHash(boardHash)] = new SimpleTTEntry(boardHash, null, returnValue);
+        //            }
+        //        } else {
+        //            if (blackTurn) {
+        //                ttEntry.setLeftValue(returnValue);
+        //            } else {
+        //                ttEntry.setRightValue(returnValue);
+        //            }
+        //        }
+        return returnValue;
 	}
 
 	/**
@@ -169,8 +168,16 @@ public class AlphaBetaSolver extends Solver {
 		return (int) Math.abs(zobristHash & 0xFFFFFF);
 	}
 
-	@Override
-	public void printCounter() {
+    @Override public void printCounter() {
+        System.out.println(AlphaBetaSolver.class.getSimpleName());
+        System.out.println("Nodes searched: " + counter);
+        System.out.println("Nodes found in TT: " + counterTT);
+        System.out.println("Cutoff: " + (1.0 * cutoff / counter));
+    }
 
-	}
+    @Override public void resetCounter() {
+        counter = 0;
+        counterTT = 0;
+        cutoff = 0;
+    }
 }

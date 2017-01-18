@@ -16,8 +16,7 @@ public class CABSolverSerial extends Solver {
 
 	private final String filepath = "Documents\\cgsuite.txt";
 	public FileWriter writer;
-	
-	private int counter;
+
 	private int foundCGT;
 	private int notFoundCGT;
 	private int cutoff;
@@ -56,38 +55,33 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
-		System.out.println("CAB solver:");
-		System.out.println("Node counter: " + counter);
-		System.out.println("Nodes looked up in TT: " + counterTT);
-		System.out.println("Found CGT Value: " + foundCGT);
-		System.out.println("Could not find CGT Value: " + notFoundCGT);
-		System.out.println("Cutoffs: " + cutoff);
-//		System.out.println("CGT counter PreTT: " + cgtSolver.getCounterPreTT());
-//		System.out.println("CGT counter PostTT: " + cgtSolver.getCounterPostTT());
+		printCounter();
+		resetCounter();
+		cgtSolver.resetCounter();
 
 		return determineWinner(blackOutcome, whiteOutcome);
 	}
 
 	private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
-		// Lookup in TT
-		long boardHash = board.getZobristHash();
-		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
-		if (ttEntry != null) {
-			if (ttEntry.getZobristHash() == boardHash) {
-				if (blackTurn && ttEntry.getLeftValue() != null) {
-					return ttEntry.getLeftValue();
-				} else if (!blackTurn && ttEntry.getRightValue() != null) {
-					return ttEntry.getRightValue();
-				}
-			} else {
-				ttEntry = null;
-			}
-		}
+		//		// Lookup in TT
+		//		long boardHash = board.getZobristHash();
+		//		TTEntry ttEntry = tTable[getIndexOfHash(boardHash)];
+		//		if (ttEntry != null) {
+		//			if (ttEntry.getZobristHash() == boardHash) {
+		//				if (blackTurn && ttEntry.getLeftValue() != null) {
+		//					counterTT++;
+		//					return ttEntry.getLeftValue();
+		//				} else if (!blackTurn && ttEntry.getRightValue() != null) {
+		//					counterTT++;
+		//					return ttEntry.getRightValue();
+		//				}
+		//			} else {
+		//				ttEntry = null;
+		//			}
+		//		}
 		
 		counter++;
 		CGTValue returnValue = null;
-		Move bestLeftOption = null;
-		Move bestRightOption = null;
 
 		List<Move> availableMoves;
 		if (blackTurn) {
@@ -173,19 +167,19 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
-		if (ttEntry == null) {
-			if (blackTurn) {
-				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
-			} else {
-				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
-			}
-		} else {
-			if (blackTurn) {
-				ttEntry.setLeftValue(returnValue);
-			} else {
-				ttEntry.setRightValue(returnValue);
-			}
-		}
+		//		if (ttEntry == null) {
+		//			if (blackTurn) {
+		//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, returnValue, null);
+		//			} else {
+		//				tTable[getIndexOfHash(boardHash)] = new TTEntry(boardHash, null, returnValue);
+		//			}
+		//		} else {
+		//			if (blackTurn) {
+		//				ttEntry.setLeftValue(returnValue);
+		//			} else {
+		//				ttEntry.setRightValue(returnValue);
+		//			}
+		//		}
 
 		return returnValue;
 	}
@@ -525,9 +519,22 @@ public class CABSolverSerial extends Solver {
 //			e.printStackTrace();
 //		}
 //	}
-	
-	@Override
-	public void printCounter() {
 
+	@Override public void printCounter() {
+		System.out.println(CABSolverSerial.class.getSimpleName());
+		System.out.println("Nodes searched: " + counter);
+		System.out.println("Nodes found in TT: " + counterTT);
+		System.out.println("Cutoff: " + (1.0 * cutoff / counter));
+		System.out.println("CGTNodes searched: " + cgtSolver.getCounter());
+		System.out.println("CGTNodes found in TT: " + cgtSolver.getCounterTT());
+		System.out.println("CGTValue found: " + (1.0 * foundCGT / (foundCGT + notFoundCGT)));
+	}
+
+	@Override public void resetCounter() {
+		counter = 0;
+		counterTT = 0;
+		cutoff = 0;
+		foundCGT = 0;
+		notFoundCGT = 0;
 	}
 }
