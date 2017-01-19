@@ -249,8 +249,8 @@ import org.junit.Test;
 	@Test
 	public void combine_nimber_posNumber() {
 		CGTValue outcome = CGTValue.combine(new Nimber(1), new Number(2));
-		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(1)));
-	}
+        Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
+    }
 
 	@Test
 	public void combine_nimber_zeroNumber() {
@@ -269,6 +269,11 @@ import org.junit.Test;
 		CGTValue outcome = CGTValue.combine(new Nimber(12), new Nimber(5));
 		Assert.assertThat(outcome, CoreMatchers.equalTo(new Nimber(9)));
 	}
+
+    @Test public void combine_nimber_nimber_zero() {
+        CGTValue outcome = CGTValue.combine(new Nimber(12), new Nimber(12));
+        Assert.assertThat(outcome, CoreMatchers.equalTo(new Number(0)));
+    }
 
 	@Test
 	public void combine_posSwitch_posNumber() {

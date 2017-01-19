@@ -6,7 +6,6 @@ public abstract class CGTValue {
 
 	public abstract boolean equals(Object object);
 
-	// TODO: https://github.com/Fallscout/Konane/issues/2
 	public static CGTValue combine(CGTValue leftValue, CGTValue rightValue) {
 		if (leftValue == null && rightValue == null) {
 			// Berlekamp et al., p. 39
@@ -45,7 +44,8 @@ public abstract class CGTValue {
 					return new Nimber(1);
 				}
 
-				if (left.getValue() == right.getValue()) {
+                //TODO: not sure
+                if (left.getValue() == right.getValue()) {
 					return new Number(left.getValue());
 				}
 
@@ -69,7 +69,8 @@ public abstract class CGTValue {
 				if (left.getValue() < 0 && right.getValue() <= 0) {
 					return new Number(right.getValue() - 1);
 				}
-			} 
+                //TODO: Keine Brüche, macht das was aus?
+            }
 			else if (rightValue instanceof Nimber) {
 				if (left.getValue() > 0) {
 					return new Number(left.getValue());
@@ -80,16 +81,16 @@ public abstract class CGTValue {
 				}
 			} else if (rightValue instanceof Switch) {
 				Switch right = (Switch) rightValue;
-				if (right.getLeft().getValue() > 0 && right.getRight().getValue() > 0) {
-					if (left.getValue() > 0) {
+                if (right.isPositive()) {
+                    if (left.getValue() > 0) {
 						return new Number(left.getValue());
 					} else if (left.getValue() == 0) {
 						return new Infinitesimal(1);
 					} else {
 						return new Number(0);
 					}
-				} else if (right.getLeft().getValue() < 0 && right.getRight().getValue() < 0) {
-					if (left.getValue() > 0) {
+                } else if (right.isNegative()) {
+                    if (left.getValue() > 0) {
 						return new Nimber(1);
 					} else if (left.getValue() == 0) {
 						return new Nimber(1);
@@ -153,16 +154,16 @@ public abstract class CGTValue {
 
 			if (rightValue instanceof Number) {
 				Number right = (Number) rightValue;
-				if (left.getLeft().getValue() > 0 && left.getRight().getValue() > 0) {
-					if (right.getValue() > 0) {
+                if (left.isPositive()) {
+                    if (right.getValue() > 0) {
 						return new Number(right.getValue());
 					} else if (right.getValue() == 0) {
 						return new Nimber(1);
 					} else {
 						return new Nimber(1);
 					}
-				} else if (left.getLeft().getValue() < 0 && left.getRight().getValue() < 0) {
-					if (right.getValue() > 0) {
+                } else if (left.isNegative()) {
+                    if (right.getValue() > 0) {
 						return new Number(0);
 					} else if (right.getValue() == 0) {
 						return new Infinitesimal(-1);

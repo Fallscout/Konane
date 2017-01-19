@@ -7,7 +7,7 @@ public class Switch extends CGTValue {
     private final Number right;
 
     public Switch(Number left, Number right) {
-        if (left.getValue() < right.getValue()) {
+        if (left.getValue() <= right.getValue()) {
             throw new InvalidParameterException("In a switch, left must be greater than right");
         }
         this.left = left;
