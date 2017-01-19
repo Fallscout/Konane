@@ -566,131 +566,131 @@ import org.junit.Test;
 	 * -------------------------------------------------
 	 */
 
-	@Test
-	public void less_Number_Number() {
-		boolean less = CGTValue.less(new Number(4), new Number(5));
-		Assert.assertThat(less, CoreMatchers.equalTo(true));
-
-		less = CGTValue.less(new Number(5), new Number(4));
-		Assert.assertThat(less, CoreMatchers.equalTo(false));
-	}
-
-	@Test
-	public void less_Number_Nimber() {
-		boolean less = CGTValue.less(new Number(4), new Nimber(1));
-		Assert.assertThat(less, CoreMatchers.equalTo(false));
-
-		less = CGTValue.less(new Number(-2), new Nimber(1));
-		Assert.assertThat(less, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void less_Nimber_Number() {
-		boolean less = CGTValue.less(new Nimber(1), new Number(4));
-		Assert.assertThat(less, CoreMatchers.equalTo(true));
-
-		less = CGTValue.less(new Nimber(1), new Number(-2));
-		Assert.assertThat(less, CoreMatchers.equalTo(false));
-	}
-
-	@Test
-	public void lessEqual_Number_Number() {
-		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Number(5));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-
-		lessEqual = CGTValue.lessEqual(new Number(5), new Number(4));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
-
-		lessEqual = CGTValue.lessEqual(new Number(5), new Number(5));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void lessEqual_Number_Nimber() {
-		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Nimber(1));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
-
-		lessEqual = CGTValue.lessEqual(new Number(-2), new Nimber(1));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-
-		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void lessEqual_Nimber_Number() {
-		boolean lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(4));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-
-		lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(-2));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
-
-		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
-		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
-	}
-	
-	@Test
-	public void greater_Number_Number() {
-		boolean greater = CGTValue.greater(new Number(4), new Number(5));
-		Assert.assertThat(greater, CoreMatchers.equalTo(false));
-
-		greater = CGTValue.greater(new Number(5), new Number(4));
-		Assert.assertThat(greater, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void greater_Number_Nimber() {
-		boolean greater = CGTValue.greater(new Number(4), new Nimber(1));
-		Assert.assertThat(greater, CoreMatchers.equalTo(true));
-
-		greater = CGTValue.greater(new Number(-2), new Nimber(1));
-		Assert.assertThat(greater, CoreMatchers.equalTo(false));
-	}
-
-	@Test
-	public void greater_Nimber_Number() {
-		boolean greater = CGTValue.greater(new Nimber(1), new Number(4));
-		Assert.assertThat(greater, CoreMatchers.equalTo(false));
-
-		greater = CGTValue.greater(new Nimber(1), new Number(-2));
-		Assert.assertThat(greater, CoreMatchers.equalTo(true));
-	}
-	
-	@Test
-	public void greaterEqual_Number_Number() {
-		boolean greaterEqual = CGTValue.greaterEqual(new Number(4), new Number(5));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
-
-		greaterEqual = CGTValue.greaterEqual(new Number(5), new Number(4));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-
-		greaterEqual = CGTValue.greaterEqual(new Number(1), new Number(1));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void greaterEqual_Number_Nimber() {
-		boolean greaterEqual = CGTValue.greater(new Number(4), new Nimber(1));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-
-		greaterEqual = CGTValue.greater(new Number(-2), new Nimber(1));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
-
-		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-	}
-
-	@Test
-	public void greaterEqual_Nimber_Number() {
-		boolean greaterEqual = CGTValue.greater(new Nimber(1), new Number(4));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
-
-		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Number(-2));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-
-		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
-		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
-	}
+	//	@Test
+	//	public void less_Number_Number() {
+	//		boolean less = CGTValue.less(new Number(4), new Number(5));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(true));
+	//
+	//		less = CGTValue.less(new Number(5), new Number(4));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(false));
+	//	}
+	//
+	//	@Test
+	//	public void less_Number_Nimber() {
+	//		boolean less = CGTValue.less(new Number(4), new Nimber(1));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(false));
+	//
+	//		less = CGTValue.less(new Number(-2), new Nimber(1));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void less_Nimber_Number() {
+	//		boolean less = CGTValue.less(new Nimber(1), new Number(4));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(true));
+	//
+	//		less = CGTValue.less(new Nimber(1), new Number(-2));
+	//		Assert.assertThat(less, CoreMatchers.equalTo(false));
+	//	}
+	//
+	//	@Test
+	//	public void lessEqual_Number_Number() {
+	//		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Number(5));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Number(5), new Number(4));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Number(5), new Number(5));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void lessEqual_Number_Nimber() {
+	//		boolean lessEqual = CGTValue.lessEqual(new Number(4), new Nimber(1));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Number(-2), new Nimber(1));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void lessEqual_Nimber_Number() {
+	//		boolean lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(4));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Nimber(1), new Number(-2));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(false));
+	//
+	//		lessEqual = CGTValue.lessEqual(new Nimber(1), new Nimber(1));
+	//		Assert.assertThat(lessEqual, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void greater_Number_Number() {
+	//		boolean greater = CGTValue.greater(new Number(4), new Number(5));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+	//
+	//		greater = CGTValue.greater(new Number(5), new Number(4));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void greater_Number_Nimber() {
+	//		boolean greater = CGTValue.greater(new Number(4), new Nimber(1));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+	//
+	//		greater = CGTValue.greater(new Number(-2), new Nimber(1));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+	//	}
+	//
+	//	@Test
+	//	public void greater_Nimber_Number() {
+	//		boolean greater = CGTValue.greater(new Nimber(1), new Number(4));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(false));
+	//
+	//		greater = CGTValue.greater(new Nimber(1), new Number(-2));
+	//		Assert.assertThat(greater, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void greaterEqual_Number_Number() {
+	//		boolean greaterEqual = CGTValue.greaterEqual(new Number(4), new Number(5));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+	//
+	//		greaterEqual = CGTValue.greaterEqual(new Number(5), new Number(4));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//
+	//		greaterEqual = CGTValue.greaterEqual(new Number(1), new Number(1));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void greaterEqual_Number_Nimber() {
+	//		boolean greaterEqual = CGTValue.greater(new Number(4), new Nimber(1));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//
+	//		greaterEqual = CGTValue.greater(new Number(-2), new Nimber(1));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+	//
+	//		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//	}
+	//
+	//	@Test
+	//	public void greaterEqual_Nimber_Number() {
+	//		boolean greaterEqual = CGTValue.greater(new Nimber(1), new Number(4));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(false));
+	//
+	//		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Number(-2));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//
+	//		greaterEqual = CGTValue.greaterEqual(new Nimber(1), new Nimber(1));
+	//		Assert.assertThat(greaterEqual, CoreMatchers.equalTo(true));
+	//	}
 
 	@Test
 	public void equal_Number_Number() {

@@ -15,7 +15,7 @@ public class Infinitesimal extends CGTValue {
         if(this.value > 0) {
         	return value+"UP";
         } else if(this.value < 0) {
-        	return value+"DOWN";
+            return -1 * value + "DOWN";
         } else {
         	throw new IllegalArgumentException("Invalid value for infinitesimal.");
         }

@@ -280,19 +280,15 @@ public abstract class CGTValue {
 				if (blackTurn) {
 					if (first.getValue() >= 0) {
 						return first;
-					} else if (second.isPositive()) {
-						return second;
-					} else {
-						return first;
+                    } else {
+                        return second;
 					}
 				} else {
 					if (first.getValue() <= 0) {
 						return first;
-					} else if (second.isNegative()) {
-						return second;
 					} else {
-						return first;
-					}
+                        return second;
+                    }
 				}
 			} else if (secondValue instanceof Infinitesimal) {
 				Infinitesimal second = (Infinitesimal) secondValue;
@@ -381,19 +377,15 @@ public abstract class CGTValue {
 				if(blackTurn) {
 					if (second.getValue() >= 0) {
 						return second;
-					} else if (first.isPositive()) {
-						return first;
-					} else {
-						return second;
+                    } else {
+                        return first;
 					}
 				} else {
 					if (second.getValue() <= 0) {
 						return second;
-					} else if (first.isNegative()) {
-						return first;
 					} else {
-						return second;
-					}
+                        return first;
+                    }
 				}
 			} else if (secondValue instanceof Nimber) {
 				Nimber second = (Nimber)secondValue;
@@ -515,61 +507,5 @@ public abstract class CGTValue {
 		}
 
 		throw new IllegalArgumentException("Cannot compare given values.");
-	}
-
-	public static boolean lessEqual(CGTValue first, CGTValue second) {
-		if(first == null) {
-			return false;
-		}
-		
-		if(second == null) {
-			return true;
-		}
-		
-		CGTValue outcomeBlack = CGTValue.max(first, second, true);
-		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return (outcomeBlack == second && outcomeWhite == first) || first.equals(second);
-	}
-
-	public static boolean less(CGTValue first, CGTValue second) {
-		if(first == null) {
-			return false;
-		}
-		
-		if(second == null) {
-			return true;
-		}
-		
-		CGTValue outcomeBlack = CGTValue.max(first, second, true);
-		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return outcomeBlack == second && outcomeWhite == first && !first.equals(second);
-	}
-
-	public static boolean greaterEqual(CGTValue first, CGTValue second) {
-		if(first == null) {
-			return false;
-		}
-		
-		if(second == null) {
-			return true;
-		}
-		
-		CGTValue outcomeBlack = CGTValue.max(first, second, true);
-		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return (outcomeBlack == first && outcomeWhite == second) || first.equals(second);
-	}
-
-	public static boolean greater(CGTValue first, CGTValue second) {
-		if(first == null) {
-			return false;
-		}
-		
-		if(second == null) {
-			return true;
-		}
-		
-		CGTValue outcomeBlack = CGTValue.max(first, second, true);
-		CGTValue outcomeWhite = CGTValue.max(first, second, false);
-		return outcomeBlack == first && outcomeWhite == second && !first.equals(second);
 	}
 }
