@@ -44,7 +44,6 @@ public abstract class CGTValue {
 					return new Nimber(1);
 				}
 
-                //TODO: not sure
                 if (left.getValue() == right.getValue()) {
 					return new Number(left.getValue());
 				}
@@ -69,7 +68,6 @@ public abstract class CGTValue {
 				if (left.getValue() < 0 && right.getValue() <= 0) {
 					return new Number(right.getValue() - 1);
 				}
-                //TODO: Keine Brüche, macht das was aus?
             }
 			else if (rightValue instanceof Nimber) {
 				if (left.getValue() > 0) {
@@ -205,23 +203,6 @@ public abstract class CGTValue {
 				}
 			}
 		}
-
-//		String l = "";
-//		if(leftValue == null) {
-//			l = "null";
-//		} else {
-//			l = leftValue.toString();
-//		}
-//		
-//		String r = "";
-//		if(rightValue == null) {
-//			r = "null";
-//		} else {
-//			r = rightValue.toString();
-//		}
-//		
-//		System.err.println("Could not combine {" + l + "|" + r +"}");
-		
 		// If value cannot be simplified, return nothing and carry on with
 		// Alpha-Beta-Search
 		return null;

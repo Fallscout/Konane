@@ -1,14 +1,14 @@
 package game;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import engine.CGTValue;
 import engine.ZobristHashCalculator;
 
+/**
+ * This is the board of the game Konane.
+ */
 public class Board {
 
 	private final int rows;
@@ -102,6 +102,12 @@ public class Board {
 		this.zobristHash = hashCalculator.calculateHash(this);
 	}
 
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param board
+	 *            the board that needs to be copied.
+	 */
 	public Board(Board board) {
 		this.rows = board.rows;
 		this.cols = board.cols;
@@ -126,40 +132,52 @@ public class Board {
 		this.zobristHash = board.zobristHash;
 	}
 
+	/**
+	 * Executes a move on the board.
+	 * 
+	 * @param move
+	 *            The move that has to be executed.
+	 */
 	public void executeMove(Move move) {
-        Piece movingPiece = this.gameState[move.getSourceRow()][move.getSourceCol()];
+		Piece movingPiece = this.gameState[move.getSourceRow()][move.getSourceCol()];
 
-        Piece capturedPiece = this.gameState[(move.getSourceRow() + move.getTargetRow()) / 2][(move.getSourceCol() + move.getTargetCol())
-            / 2];
-        if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
-            this.removePiece(capturedPiece);
-            move.setCapturedPiece(capturedPiece);
-        } else {
-            throw new IllegalStateException(
-                "This is an invalid move. From (" + move.getSourceRow() + "|" + move.getSourceCol() + ") to (" + move.getTargetRow() + "|"
-                    + move.getTargetCol() + ") on board:\n" + getBoardRepresentation());
-        }
+		Piece capturedPiece = this.gameState[(move.getSourceRow() + move.getTargetRow())
+				/ 2][(move.getSourceCol() + move.getTargetCol()) / 2];
+		if (capturedPiece != null && capturedPiece.isBlack() != movingPiece.isBlack()) {
+			this.removePiece(capturedPiece);
+			move.setCapturedPiece(capturedPiece);
+		} else {
+			throw new IllegalStateException("This is an invalid move. From (" + move.getSourceRow() + "|"
+					+ move.getSourceCol() + ") to (" + move.getTargetRow() + "|" + move.getTargetCol() + ") on board:\n"
+					+ getBoardRepresentation());
+		}
 
-        movingPiece.setRow(move.getTargetRow());
-        movingPiece.setCol(move.getTargetCol());
-        this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
-        this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
-        this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
-    }
+		movingPiece.setRow(move.getTargetRow());
+		movingPiece.setCol(move.getTargetCol());
+		this.gameState[move.getSourceRow()][move.getSourceCol()] = null;
+		this.gameState[move.getTargetRow()][move.getTargetCol()] = movingPiece;
+		this.zobristHash = hashCalculator.updateHash(zobristHash, move, movingPiece);
+	}
 
+	/**
+	 * This reverts a move on the board.
+	 * 
+	 * @param move
+	 *            The move that has to be reverted.
+	 */
 	public void revertMove(Move move) {
-        Piece movingPiece = this.gameState[move.getTargetRow()][move.getTargetCol()];
-        Piece capturedPiece = move.getCapturedPiece();
+		Piece movingPiece = this.gameState[move.getTargetRow()][move.getTargetCol()];
+		Piece capturedPiece = move.getCapturedPiece();
 
-        this.addPiece(capturedPiece);
+		this.addPiece(capturedPiece);
 
-        movingPiece.setRow(move.getSourceRow());
-        movingPiece.setCol(move.getSourceCol());
-        this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
-        this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
+		movingPiece.setRow(move.getSourceRow());
+		movingPiece.setCol(move.getSourceCol());
+		this.gameState[move.getSourceRow()][move.getSourceCol()] = movingPiece;
+		this.gameState[move.getTargetRow()][move.getTargetCol()] = null;
 
-        this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
-    }
+		this.zobristHash = hashCalculator.updateHash(this.zobristHash, move, movingPiece);
+	}
 
 	public Board negate() {
 		Board board = new Board(this);
@@ -234,33 +252,33 @@ public class Board {
 	}
 
 	private List<Move> getValidMoves(Piece piece) {
-        List<Move> moves = new ArrayList<>();
+		List<Move> moves = new ArrayList<>();
 
-        int row = piece.getRow();
-        int col = piece.getCol();
+		int row = piece.getRow();
+		int col = piece.getCol();
 
-        if (row - 2 >= 0 && this.gameState[row - 1][col] != null && this.gameState[row - 1][col].isBlack() != piece.isBlack()
-            && this.gameState[row - 2][col] == null) {
-            moves.add(new Move(row, col, row - 2, col));
-        }
+		if (row - 2 >= 0 && this.gameState[row - 1][col] != null
+				&& this.gameState[row - 1][col].isBlack() != piece.isBlack() && this.gameState[row - 2][col] == null) {
+			moves.add(new Move(row, col, row - 2, col));
+		}
 
-        if (row + 2 < this.rows && this.gameState[row + 1][col] != null && this.gameState[row + 1][col].isBlack() != piece.isBlack()
-            && this.gameState[row + 2][col] == null) {
-            moves.add(new Move(row, col, row + 2, col));
-        }
+		if (row + 2 < this.rows && this.gameState[row + 1][col] != null
+				&& this.gameState[row + 1][col].isBlack() != piece.isBlack() && this.gameState[row + 2][col] == null) {
+			moves.add(new Move(row, col, row + 2, col));
+		}
 
-        if (col - 2 >= 0 && this.gameState[row][col - 1] != null && this.gameState[row][col - 1].isBlack() != piece.isBlack()
-            && this.gameState[row][col - 2] == null) {
-            moves.add(new Move(row, col, row, col - 2));
-        }
+		if (col - 2 >= 0 && this.gameState[row][col - 1] != null
+				&& this.gameState[row][col - 1].isBlack() != piece.isBlack() && this.gameState[row][col - 2] == null) {
+			moves.add(new Move(row, col, row, col - 2));
+		}
 
-        if (col + 2 < this.cols && this.gameState[row][col + 1] != null && this.gameState[row][col + 1].isBlack() != piece.isBlack()
-            && this.gameState[row][col + 2] == null) {
-            moves.add(new Move(row, col, row, col + 2));
-        }
+		if (col + 2 < this.cols && this.gameState[row][col + 1] != null
+				&& this.gameState[row][col + 1].isBlack() != piece.isBlack() && this.gameState[row][col + 2] == null) {
+			moves.add(new Move(row, col, row, col + 2));
+		}
 
-        return moves;
-    }
+		return moves;
+	}
 
 	public boolean isEndgame() {
 		int pieces = this.blackPieces.size() + this.whitePieces.size();
@@ -276,15 +294,15 @@ public class Board {
 		}
 		this.gameState[piece.getRow()][piece.getCol()] = null;
 	}
-	
-    private void addPiece(Piece piece) {
-        if (piece.isBlack()) {
-            this.blackPieces.add(piece);
-        } else {
-            this.whitePieces.add(piece);
-        }
-        this.gameState[piece.getRow()][piece.getCol()] = piece;
-    }
+
+	private void addPiece(Piece piece) {
+		if (piece.isBlack()) {
+			this.blackPieces.add(piece);
+		} else {
+			this.whitePieces.add(piece);
+		}
+		this.gameState[piece.getRow()][piece.getCol()] = piece;
+	}
 
 	public Piece getPieceAtPosition(int row, int col) {
 		return gameState[row][col];
@@ -293,38 +311,40 @@ public class Board {
 	public long getZobristHash() {
 		return zobristHash;
 	}
-	
-    @Override public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
 
-        Board board = (Board) o;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
-        if (rows != board.rows)
-            return false;
-        if (cols != board.cols)
-            return false;
-        if (zobristHash != board.zobristHash)
-            return false;
-        if (!Arrays.deepEquals(gameState, board.gameState))
-            return false;
-        if (blackPieces != null ? !blackPieces.containsAll(board.blackPieces) : board.blackPieces != null)
-            return false;
-        if (whitePieces != null ? !whitePieces.containsAll(board.whitePieces) : board.whitePieces != null)
-            return false;
-        return hashCalculator != null ? hashCalculator.equals(board.hashCalculator) : board.hashCalculator == null;
-    }
-	
-    @Override public int hashCode() {
-        int result = rows;
-        result = 31 * result + cols;
-        result = 31 * result + Arrays.deepHashCode(gameState);
-        result = 31 * result + (blackPieces != null ? blackPieces.hashCode() : 0);
-        result = 31 * result + (whitePieces != null ? whitePieces.hashCode() : 0);
-        result = 31 * result + (hashCalculator != null ? hashCalculator.hashCode() : 0);
-        result = 31 * result + (int) (zobristHash ^ (zobristHash >>> 32));
-        return result;
-    }
+		Board board = (Board) o;
+
+		if (rows != board.rows)
+			return false;
+		if (cols != board.cols)
+			return false;
+		if (zobristHash != board.zobristHash)
+			return false;
+		if (!Arrays.deepEquals(gameState, board.gameState))
+			return false;
+		if (blackPieces != null ? !blackPieces.containsAll(board.blackPieces) : board.blackPieces != null)
+			return false;
+		if (whitePieces != null ? !whitePieces.containsAll(board.whitePieces) : board.whitePieces != null)
+			return false;
+		return hashCalculator != null ? hashCalculator.equals(board.hashCalculator) : board.hashCalculator == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = rows;
+		result = 31 * result + cols;
+		result = 31 * result + Arrays.deepHashCode(gameState);
+		result = 31 * result + (blackPieces != null ? blackPieces.hashCode() : 0);
+		result = 31 * result + (whitePieces != null ? whitePieces.hashCode() : 0);
+		result = 31 * result + (hashCalculator != null ? hashCalculator.hashCode() : 0);
+		result = 31 * result + (int) (zobristHash ^ (zobristHash >>> 32));
+		return result;
+	}
 }

@@ -7,6 +7,7 @@ import game.Move;
 
 public class CGTSolver extends Solver {
 
+    @SuppressWarnings("unchecked")
 	private final TTEntry<CGTValue>[] tTable = new TTEntry[(int) Math.pow(2, 24)];
 
 	/**
@@ -18,35 +19,6 @@ public class CGTSolver extends Solver {
 	 */
 	@Override
 	public OutcomeType solve(Board board) {
-
-		// CGTValue result = this.calculate(board);
-		//
-		// System.out.println("Result: " + result);
-		//
-		// if (result != null) {
-		// Class<? extends CGTValue> resultingClass = result.getClass();
-		//
-		// if (resultingClass == Number.class) {
-		// Number number = (Number) result;
-		// if (number.getValue() == 0) {
-		// return OutcomeType.SECOND;
-		// } else if (number.getValue() > 0) {
-		// return OutcomeType.BLACK;
-		// } else if (number.getValue() < 0) {
-		// return OutcomeType.WHITE;
-		// }
-		// } else if (resultingClass == Nimber.class) {
-		// return OutcomeType.FIRST;
-		// } else if (resultingClass == Switch.class) {
-		// // TODO:
-		// } else if (resultingClass == Infinitesimal.class) {
-		// // TODO:
-		// } else {
-		// throw new IllegalStateException("The result class is not supported
-		// yet: " + resultingClass);
-		// }
-		// }
-
 		return null;
 	}
 
@@ -57,7 +29,6 @@ public class CGTSolver extends Solver {
 	 *            The board one wants to calculate the {@link CGTValue} for.
 	 * @return The board's value
 	 */
-	// TODO: https://github.com/Fallscout/Konane/issues/3
 	public CGTValue calculate(Board board) {
 		// Lookup in TT
 		long boardHash = board.getZobristHash();

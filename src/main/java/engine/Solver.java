@@ -7,6 +7,9 @@ import java.util.List;
 import game.Board;
 import game.Move;
 
+/**
+ * Basic abstract class for the solver. 
+ */
 public abstract class Solver {
 
 	protected long counter;

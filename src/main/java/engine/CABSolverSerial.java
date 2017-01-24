@@ -1,34 +1,61 @@
 package engine;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 
 import game.Board;
 import game.Move;
-import game.Piece;
 
+/**
+ * This is the Combinatorial Alpha Beta Solver. This solver calculates the
+ * outcome type of a Konane board. Therefore it uses a standard alpha-beta
+ * solver and an additional CGT solver.
+ */
 public class CABSolverSerial extends Solver {
 
+	/**
+	 * Transposition table array.
+	 */
+	@SuppressWarnings("unchecked")
 	private final TTEntry<CGTValue>[] tTable = new TTEntry[(int) Math.pow(2, 24)];
+	/**
+	 * The CGT solver
+	 */
 	private final CGTSolver cgtSolver = new CGTSolver();
+	/**
+	 * Zero position constant.
+	 */
 	private final CGTValue ZERO = new Number(0);
 
-	private final String filepath = "Documents\\cgsuite.txt";
-	public FileWriter writer;
-
+	/**
+	 * Counter for the CGT part.
+	 */
 	private int foundCGT;
+	/**
+	 * Counter for the CGT part.
+	 */
 	private int notFoundCGT;
+	/**
+	 * Counter for the cutoffs.
+	 */
 	private int cutoff;
-	
+
+	/**
+	 * Main solve method. This method calls the internal solver method for black
+	 * starting and white starting. Afterwards it combines both results to
+	 * determine the overall winner.
+	 */
+	@Override
 	public OutcomeType solve(Board board) {
+		// Counter initialization
 		this.counter = 0;
 		this.counterTT = 0;
 		this.foundCGT = 0;
 		this.notFoundCGT = 0;
 		this.cutoff = 0;
 
+		// Solve for black starting
 		CGTValue blackOutcome = solve(board, true, new Number(-10), new Number(10), 0);
+		// Solve for white starting
 		CGTValue whiteOutcome = solve(board, false, new Number(-10), new Number(10), 0);
 
 		if (blackOutcome.equals(new Number(0))) {
@@ -47,9 +74,30 @@ public class CABSolverSerial extends Solver {
 		resetCounter();
 		cgtSolver.resetCounter();
 
+		// returns the determined winner
 		return determineWinner(blackOutcome, whiteOutcome);
 	}
 
+	/**
+	 * This method is the internal solver method. It uses transposition tables
+	 * and move ordering. The special part of this solver is that the solver
+	 * stops at a board position that fulfills the end-game condition. If the
+	 * end-game condition is fulfilled, the CGT value of the board will be
+	 * calculated by the CGT solver. In this way the alpha-beta solver can safe
+	 * some ply of searching and therefore safe very much nodes.
+	 * 
+	 * @param board
+	 *            The actual game board.
+	 * @param blackTurn
+	 *            This boolean indicates whose turn it is.
+	 * @param alpha
+	 *            The alpha border.
+	 * @param beta
+	 *            The beta border.
+	 * @param ply
+	 *            The actual depth of the tree
+	 * @return The outcome value will be returned at the end of the solver.
+	 */
 	private CGTValue solve(Board board, boolean blackTurn, CGTValue alpha, CGTValue beta, int ply) {
 		// Lookup in TT
 		long boardHash = board.getZobristHash();
@@ -67,10 +115,11 @@ public class CABSolverSerial extends Solver {
 				ttEntry = null;
 			}
 		}
-		
+
 		counter++;
 		CGTValue returnValue = null;
 
+		// Get the options for left or right
 		List<Move> availableMoves;
 		if (blackTurn) {
 			availableMoves = board.getLeftOptions();
@@ -82,7 +131,6 @@ public class CABSolverSerial extends Solver {
 			// Do CGT Stuff
 			returnValue = cgtSolver.calculate(board);
 			if (returnValue != null) {
-				//					board.printToFile(returnValue);
 				foundCGT++;
 				if (returnValue.equals(new Number(0))) {
 					returnValue = new Nimber(1);
@@ -94,6 +142,7 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
+		// move ordering when options are available
 		if (returnValue == null) {
 			if (availableMoves.isEmpty()) {
 				returnValue = CGTValue.max(new Number(1), new Number(-1), !blackTurn);
@@ -102,6 +151,7 @@ public class CABSolverSerial extends Solver {
 			}
 		}
 
+		// If there are moves available, do alpha beta
 		if (returnValue == null) {
 			if (blackTurn) {
 				returnValue = new Number(-10);
@@ -111,16 +161,8 @@ public class CABSolverSerial extends Solver {
 					board.revertMove(move);
 
 					returnValue = CGTValue.max(value, returnValue, true);
-//					if (CGTValue.greater(value, returnValue)) {
-//						returnValue = value;
-//					}
-
 					alpha = CGTValue.max(returnValue, alpha, true);
-//					if (CGTValue.greater(returnValue, alpha)) {
-//						alpha = returnValue;
-//						bestLeftOption = move;
-//					}
-					
+
 					CGTValue test = CGTValue.max(alpha, beta, true);
 					if (test.equals(alpha) || alpha.equals(beta)) {
 						cutoff++;
@@ -139,16 +181,8 @@ public class CABSolverSerial extends Solver {
 					board.revertMove(move);
 
 					returnValue = CGTValue.max(value, returnValue, false);
-//					if (CGTValue.less(value, returnValue)) {
-//						returnValue = value;
-//					}
-					
 					beta = CGTValue.max(returnValue, beta, false);
-//					if (CGTValue.less(returnValue, beta)) {
-//						beta = returnValue;
-//						bestRightOption = move;
-//					}
-					
+
 					CGTValue test = CGTValue.max(alpha, beta, false);
 					if (test.equals(beta) || alpha.equals(beta)) {
 						cutoff++;
@@ -168,6 +202,7 @@ public class CABSolverSerial extends Solver {
 			returnValue = new Number(0);
 		}
 
+		// Write into the transposition table when there is no entry
 		if (ttEntry == null) {
 			if (blackTurn) {
 				tTable[getIndexOfHash(boardHash)] = new TTEntry<>(boardHash, returnValue, null);
@@ -185,6 +220,15 @@ public class CABSolverSerial extends Solver {
 		return returnValue;
 	}
 
+	/**
+	 * This method determines the winner given the outcome for black and white.
+	 * 
+	 * @param blackOutcome
+	 *            calculated outcome of black.
+	 * @param whiteOutcome
+	 *            calculated outcome of white.
+	 * @return returns the combined outcome of black and white starting.
+	 */
 	public static OutcomeType determineWinner(CGTValue blackOutcome, CGTValue whiteOutcome) {
 		if (blackOutcome instanceof Number) {
 			Number black = (Number) blackOutcome;
@@ -212,7 +256,6 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.FIRST;
 				}
 			} else if (whiteOutcome instanceof Nimber) {
-				// Nimber white = (Nimber)whiteOutcome;
 
 				if (black.getValue() > 0) {
 					return OutcomeType.BLACK;
@@ -275,7 +318,7 @@ public class CABSolverSerial extends Solver {
 				}
 			}
 		} else if (blackOutcome instanceof Nimber) {
-			//			Nimber black = (Nimber) blackOutcome;
+			// Nimber black = (Nimber) blackOutcome;
 
 			if (whiteOutcome instanceof Number) {
 				Number white = (Number) whiteOutcome;
@@ -408,25 +451,23 @@ public class CABSolverSerial extends Solver {
 			if (whiteOutcome instanceof Number) {
 				Number white = (Number) whiteOutcome;
 
-				if(white.getValue() > 0) {
-					if(black.getValue() > 0) {
+				if (white.getValue() > 0) {
+					if (black.getValue() > 0) {
 						return OutcomeType.BLACK;
 					} else {
 						return OutcomeType.SECOND;
 					}
 				}
 
-				if(white.getValue() <= 0) {
-					if(black.getValue() > 0) {
+				if (white.getValue() <= 0) {
+					if (black.getValue() > 0) {
 						return OutcomeType.FIRST;
 					} else {
 						return OutcomeType.WHITE;
 					}
 				}
 			} else if (whiteOutcome instanceof Nimber) {
-				//				Nimber white = (Nimber) whiteOutcome;
-
-				if(black.getValue() > 0) {
+				if (black.getValue() > 0) {
 					return OutcomeType.BLACK;
 				} else {
 					return OutcomeType.SECOND;
@@ -434,20 +475,20 @@ public class CABSolverSerial extends Solver {
 			} else if (whiteOutcome instanceof Switch) {
 				Switch white = (Switch) whiteOutcome;
 
-				if(white.isNegative()) {
-					if(black.getValue() > 0) {
+				if (white.isNegative()) {
+					if (black.getValue() > 0) {
 						return OutcomeType.FIRST;
 					} else {
 						return OutcomeType.WHITE;
 					}
-				} else if(white.isPositive()) {
-					if(black.getValue() > 0) {
+				} else if (white.isPositive()) {
+					if (black.getValue() > 0) {
 						return OutcomeType.BLACK;
 					} else {
 						return OutcomeType.SECOND;
 					}
-				} else if(white.isNimber()) {
-					if(black.getValue() > 0) {
+				} else if (white.isNimber()) {
+					if (black.getValue() > 0) {
 						return OutcomeType.BLACK;
 					} else {
 						return OutcomeType.SECOND;
@@ -456,14 +497,14 @@ public class CABSolverSerial extends Solver {
 			} else if (whiteOutcome instanceof Infinitesimal) {
 				Infinitesimal white = (Infinitesimal) whiteOutcome;
 
-				if(black.getValue() > 0) {
-					if(white.getValue() > 0) {
+				if (black.getValue() > 0) {
+					if (white.getValue() > 0) {
 						return OutcomeType.BLACK;
 					} else {
 						return OutcomeType.FIRST;
 					}
 				} else {
-					if(white.getValue() > 0) {
+					if (white.getValue() > 0) {
 						return OutcomeType.SECOND;
 					} else {
 						return OutcomeType.WHITE;
@@ -475,44 +516,12 @@ public class CABSolverSerial extends Solver {
 		throw new IllegalArgumentException("Cannot determine winner for given arguments.");
 	}
 
-//	public void printToFile(CGTValue result) {
-//		StringBuilder builder = new StringBuilder();
-//
-//		builder.append("g := game.grid.Konane(\"");
-	//
-//		for (int row = 0; row < this.rows; row++) {
-//			for (int col = 0; col < this.cols; col++) {
-//				Piece piece = this.gameState[row][col];
-//				if (piece != null) {
-//					if (piece.isBlack()) {
-//						builder.append("x");
-//					} else {
-//						builder.append("o");
-//					}
-//				} else {
-//					builder.append(".");
-//				}
-//			}
-//			if (row < this.rows - 1) {
-//				builder.append("|");
-//			}
-//		}
-	//
-//		builder.append("\")");
-	//
-//		builder.append(" = " + result.toString() + "\n");
-//
-//		try {
-//			this.writer.write(builder.toString());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
-	@Override public void printCounter() {
+	@Override
+	public void printCounter() {
 		System.out.println(CABSolverSerial.class.getSimpleName());
 		System.out.println("Nodes searched: " + counter);
+		long all = cgtSolver.getCounter() + counter;
+		System.out.println("AB nodes + CGT nodes searched: " + all);
 		System.out.println("Nodes found in TT: " + counterTT);
 		System.out.println("Cutoff: " + (1.0 * cutoff / counter));
 		System.out.println("CGTNodes searched: " + cgtSolver.getCounter());
@@ -520,7 +529,8 @@ public class CABSolverSerial extends Solver {
 		System.out.println("CGTValue found: " + (1.0 * foundCGT / (foundCGT + notFoundCGT)));
 	}
 
-	@Override public void resetCounter() {
+	@Override
+	public void resetCounter() {
 		counter = 0;
 		counterTT = 0;
 		cutoff = 0;
