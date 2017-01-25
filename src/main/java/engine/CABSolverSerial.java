@@ -277,7 +277,7 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.FIRST;
 					} else if (white.isPositive()) {
 						return OutcomeType.BLACK;
-					} else if (white.isNimber()) {
+					} else if (white.isMixed()) {
 						return OutcomeType.BLACK;
 					}
 				} else {
@@ -285,7 +285,7 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.WHITE;
 					} else if (white.isPositive()) {
 						return OutcomeType.SECOND;
-					} else if (white.isNimber()) {
+					} else if (white.isMixed()) {
 						return OutcomeType.SECOND;
 					}
 				}
@@ -346,7 +346,7 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.WHITE;
 				} else if (white.isPositive()) {
 					return OutcomeType.SECOND;
-				} else if (white.isNimber()) {
+				} else if (white.isMixed()) {
 					return OutcomeType.SECOND;
 				}
 
@@ -370,7 +370,7 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.SECOND;
 					} else if (black.isPositive()) {
 						return OutcomeType.BLACK;
-					} else if (black.isNimber()) {
+					} else if (black.isMixed()) {
 						return OutcomeType.SECOND;
 					}
 				} else {
@@ -378,7 +378,7 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.WHITE;
 					} else if (black.isPositive()) {
 						return OutcomeType.FIRST;
-					} else if (black.isNimber()) {
+					} else if (black.isMixed()) {
 						return OutcomeType.WHITE;
 					}
 				}
@@ -390,7 +390,7 @@ public class CABSolverSerial extends Solver {
 					return OutcomeType.SECOND;
 				} else if (black.isPositive()) {
 					return OutcomeType.BLACK;
-				} else if (black.isNimber()) {
+				} else if (black.isMixed()) {
 					return OutcomeType.SECOND;
 				}
 
@@ -402,7 +402,7 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.WHITE;
 					} else if (white.isPositive()) {
 						return OutcomeType.SECOND;
-					} else if (white.isNimber()) {
+					} else if (white.isMixed()) {
 						return OutcomeType.SECOND;
 					}
 				} else if (black.isPositive()) {
@@ -410,15 +410,15 @@ public class CABSolverSerial extends Solver {
 						return OutcomeType.FIRST;
 					} else if (white.isPositive()) {
 						return OutcomeType.BLACK;
-					} else if (white.isNimber()) {
+					} else if (white.isMixed()) {
 						return OutcomeType.BLACK;
 					}
-				} else if (black.isNimber()) {
+				} else if (black.isMixed()) {
 					if (white.isNegative()) {
 						return OutcomeType.WHITE;
 					} else if (white.isPositive()) {
 						return OutcomeType.SECOND;
-					} else if (white.isNimber()) {
+					} else if (white.isMixed()) {
 						return OutcomeType.SECOND;
 					}
 				}
@@ -437,7 +437,7 @@ public class CABSolverSerial extends Solver {
 					} else {
 						return OutcomeType.FIRST;
 					}
-				} else if (black.isNimber()) {
+				} else if (black.isMixed()) {
 					if (white.getValue() > 0) {
 						return OutcomeType.SECOND;
 					} else {
@@ -487,7 +487,7 @@ public class CABSolverSerial extends Solver {
 					} else {
 						return OutcomeType.SECOND;
 					}
-				} else if (white.isNimber()) {
+				} else if (white.isMixed()) {
 					if (black.getValue() > 0) {
 						return OutcomeType.BLACK;
 					} else {

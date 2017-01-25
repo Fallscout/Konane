@@ -436,7 +436,7 @@ import org.junit.Test;
 		Number second = new Number(-3);
 
 		CGTValue max = CGTValue.max(new Number(-3), new Switch(first, second), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Switch(first, second)));
 
 		max = CGTValue.max(new Number(-3), new Switch(first, second), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
@@ -462,7 +462,7 @@ import org.junit.Test;
 		Number second = new Number(-3);
 
 		CGTValue max = CGTValue.max(new Switch(first, second), new Number(-3), true);
-		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));
+		Assert.assertThat(max, CoreMatchers.equalTo(new Switch(first, second)));
 
 		max = CGTValue.max(new Switch(first, second), new Number(-3), false);
 		Assert.assertThat(max, CoreMatchers.equalTo(new Number(-3)));

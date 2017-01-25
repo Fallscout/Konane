@@ -230,7 +230,7 @@
 //						return OutcomeType.FIRST;
 //					} else if (white.isPositive()) {
 //						return OutcomeType.BLACK;
-//					} else if (white.isNimber()) {
+//					} else if (white.isMixed()) {
 //						return OutcomeType.BLACK;
 //					}
 //				} else {
@@ -238,7 +238,7 @@
 //						return OutcomeType.WHITE;
 //					} else if (white.isPositive()) {
 //						return OutcomeType.SECOND;
-//					} else if (white.isNimber()) {
+//					} else if (white.isMixed()) {
 //						return OutcomeType.SECOND;
 //					}
 //				}
@@ -299,7 +299,7 @@
 //					return OutcomeType.WHITE;
 //				} else if (white.isPositive()) {
 //					return OutcomeType.SECOND;
-//				} else if (white.isNimber()) {
+//				} else if (white.isMixed()) {
 //					return OutcomeType.SECOND;
 //				}
 //
@@ -323,7 +323,7 @@
 //						return OutcomeType.SECOND;
 //					} else if (black.isPositive()) {
 //						return OutcomeType.BLACK;
-//					} else if (black.isNimber()) {
+//					} else if (black.isMixed()) {
 //						return OutcomeType.SECOND;
 //					}
 //				} else {
@@ -331,7 +331,7 @@
 //						return OutcomeType.WHITE;
 //					} else if (black.isPositive()) {
 //						return OutcomeType.FIRST;
-//					} else if (black.isNimber()) {
+//					} else if (black.isMixed()) {
 //						return OutcomeType.WHITE;
 //					}
 //				}
@@ -343,7 +343,7 @@
 //					return OutcomeType.SECOND;
 //				} else if (black.isPositive()) {
 //					return OutcomeType.BLACK;
-//				} else if (black.isNimber()) {
+//				} else if (black.isMixed()) {
 //					return OutcomeType.SECOND;
 //				}
 //
@@ -355,7 +355,7 @@
 //						return OutcomeType.WHITE;
 //					} else if (white.isPositive()) {
 //						return OutcomeType.SECOND;
-//					} else if (white.isNimber()) {
+//					} else if (white.isMixed()) {
 //						return OutcomeType.SECOND;
 //					}
 //				} else if (black.isPositive()) {
@@ -363,15 +363,15 @@
 //						return OutcomeType.FIRST;
 //					} else if (white.isPositive()) {
 //						return OutcomeType.BLACK;
-//					} else if (white.isNimber()) {
+//					} else if (white.isMixed()) {
 //						return OutcomeType.BLACK;
 //					}
-//				} else if (black.isNimber()) {
+//				} else if (black.isMixed()) {
 //					if (white.isNegative()) {
 //						return OutcomeType.WHITE;
 //					} else if (white.isPositive()) {
 //						return OutcomeType.SECOND;
-//					} else if (white.isNimber()) {
+//					} else if (white.isMixed()) {
 //						return OutcomeType.SECOND;
 //					}
 //				}
@@ -390,7 +390,7 @@
 //					} else {
 //						return OutcomeType.FIRST;
 //					}
-//				} else if (black.isNimber()) {
+//				} else if (black.isMixed()) {
 //					if (white.getValue() > 0) {
 //						return OutcomeType.SECOND;
 //					} else {
@@ -442,7 +442,7 @@
 //					} else {
 //						return OutcomeType.SECOND;
 //					}
-//				} else if(white.isNimber()) {
+//				} else if(white.isMixed()) {
 //					if(black.getValue() > 0) {
 //						return OutcomeType.BLACK;
 //					} else {
