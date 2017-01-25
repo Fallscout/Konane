@@ -19,7 +19,7 @@ public class CGTSolver extends Solver {
 	 */
 	@Override
 	public OutcomeType solve(Board board) {
-		return null;
+		throw new UnsupportedOperationException("This solving method for CGTSolver is not used");
 	}
 
 	/**
