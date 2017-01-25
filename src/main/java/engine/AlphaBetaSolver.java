@@ -28,9 +28,8 @@ public class AlphaBetaSolver extends Solver {
 	 * combines the outcome for black starting and white starting the game.
 	 * 
 	 * @return The solver returns the combined outcome type.
-	 * @throws The
-	 *             solver throws an IllegalStateException because the method
-	 *             could not determine a winner.
+	 * @throws IllegalStateException The solver throws an IllegalStateException
+	 * 				because the method could not determine a winner.
 	 */
 	@Override
 	public OutcomeType solve(Board board) {

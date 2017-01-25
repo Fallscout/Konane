@@ -1,10 +1,10 @@
 package game;
 
 public class Move {
-	private int targetRow;
-	private int targetCol;
-	private int sourceRow;
-	private int sourceCol;
+	private final int targetRow;
+	private final int targetCol;
+	private final int sourceRow;
+	private final int sourceCol;
 	private Piece capturedPiece;
 	
 	public Move(int sourceRow, int sourceCol, int targetRow, int targetCol) {

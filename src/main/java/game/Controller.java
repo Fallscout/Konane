@@ -29,7 +29,7 @@ public class Controller {
 					System.out.println("---------------Testing " + i + "x" + j + "-----" + (k == 0 ? "BLACK" : "WHITE") + "-----");
 					OutcomeType outcomeType = null;
 					for (Solver solver : solvers) {
-						Board board = new Board(i, j, k == 0 ? true : false);
+						Board board = new Board(i, j, k == 0);
 						OutcomeType currentSolverOutcome = solver.solveWithTime(board);
 						System.out.println(currentSolverOutcome);
 						if (outcomeType == null) {
